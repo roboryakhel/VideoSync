@@ -9,14 +9,18 @@ let roomID = "";
 const socket = io(URL);
 
 // Connect to Main room and get username, and roomID
-socket.on("Main", (args) => {
-        console.log(args);
-        username = args.username
-        roomID = args.roomID;
-        type = args.type;
-        here();
-});
+const connectPublisher = () =>{
+        socket.on("Main", (args) => {
+                console.log(args);
+                username = args.username
+                roomID = args.roomID;
+                type = args.type;
+                putPubinTheirRoom();
+        });
+}
 
+
+// Friend sends pubRoomID via msg
 const connectListenner = (pubRoomID) => {
         socket.on(pubRoomID, (args) => {
                 console.log(args);
@@ -29,7 +33,7 @@ const connectListenner = (pubRoomID) => {
 
 
 // Connect to client room and send init msg
-function here() {
+function putPubinTheirRoom() {
         socket.on(roomID, (args) => {
                 console.log(args);
         });
