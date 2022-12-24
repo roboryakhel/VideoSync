@@ -15,7 +15,7 @@ io.on("connection", socket => {
   // client joins the main room
   socket.join(mainRoom);
 
-  if (true) { // this is for publishers
+    // this is for publishers
     // client gets his username, and roomid
     let roomID = genRoomID();
     let username = genUsername();
@@ -24,10 +24,8 @@ io.on("connection", socket => {
       type: "pub",
       roomID: roomID
     });
-    
-  }
-  console.log(socket.id);
-
+    gotoroom(socket, roomID, username);
+    console.log(socket.id); 
 });
 
 
@@ -35,6 +33,20 @@ function gotoroom(socket, roomID, username) {
   socket.join(roomID);
   socket.emit(roomID,{
     text: `Welcome to your room ${roomID}, ${username} `
+  });
+
+  listenToRoom(roomID);
+}
+
+const listenToRoom = (roomID)=> {
+  io.on("connection", socket => {
+    socket.join(roomID);
+    let username = genUsername();
+    socket.emit(roomID, {
+      user: username,
+      type: "sub",
+      roomID: roomID
+    });    
   });
 }
 
