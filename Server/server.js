@@ -5,48 +5,46 @@ const socketio = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-const usernames = ["bob", "alice", "sam", "john"];
-const mainRoom = "Main";
+const usernames = ["bob", "alice", "sam", "john"];      // Server has list of usernames that it uses to randomly assign to clients
+const mainRoom = "Main";            // All clients initally connect to main room
 
-let rooms = [];
+let rooms = [];                     // List of rooms that the server has
 
 // client connects
 io.on("connection", socket => {
   // client joins the main room
-  socket.join(mainRoom);
+  if (socket.handshake.headers.type == "pub") {
+    socket.join(mainRoom);
 
     // this is for publishers
     // client gets his username, and roomid
     let roomID = genRoomID();
     let username = genUsername();
     socket.emit(mainRoom, {
-      user: username,
+      username: username,
       type: "pub",
       roomID: roomID
     });
     gotoroom(socket, roomID, username);
-    console.log(socket.id); 
+    console.log("Socket: ",socket.id, " connected to this server",'\n',"has name: ",username, " and roomID: ",roomID,'\n'); 
+  } else {
+    let r = socket.handshake.headers.roomid;
+    socket.join(r);
+    let username = genUsername();
+    socket.emit(r, {
+      username: username,
+      type: "sub",
+      roomID: r
+    }); 
+    console.log("Socket: ",socket.id, " connected to this server",'\n',"has name: ",username, " and roomID: ",r,'\n'); 
+  }
 });
 
 
 function gotoroom(socket, roomID, username) {
   socket.join(roomID);
   socket.emit(roomID,{
-    text: `Welcome to your room ${roomID}, ${username} `
-  });
-
-  listenToRoom(roomID);
-}
-
-const listenToRoom = (roomID)=> {
-  io.on("connection", socket => {
-    socket.join(roomID);
-    let username = genUsername();
-    socket.emit(roomID, {
-      user: username,
-      type: "sub",
-      roomID: roomID
-    });    
+    text: "Success"
   });
 }
 
