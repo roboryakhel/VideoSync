@@ -1,10 +1,17 @@
 const http = require('http');
 const { SocketAddress } = require('net');
 const express = require('express');
-const socketio = require('socket.io');
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+const io = require('socket.io')(server,{
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["type", "roomID"],
+    credentials: true
+  }
+});
+//cconst io = socketio(server);
 const usernames = ["bob", "alice", "sam", "john"];      // Server has list of usernames that it uses to randomly assign to clients
 const mainRoom = "Main";            // All clients initally connect to main room
 
@@ -71,7 +78,7 @@ function gotoroom(socket, roomID, username) {
 //   }
 // });
 
-server.listen(process.env.PORT || 3000, () =>
+server.listen(process.env.PORT || 8080, () =>
   console.log('Server is running')
 );
 
