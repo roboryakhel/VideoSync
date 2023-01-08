@@ -20,17 +20,13 @@ const users = new Map();
 
 // client connects
 io.on("connection", socket => {
-  // client joins the main room
-  if (socket.handshake.headers.type == "pub") {
-    socket.join(mainRoom);
-
+  if (socket.handshake.headers.type === "pub") {
     // this is for publishers
     // client gets his username, and roomid
     let roomID = genRoomID();
     let username = genUsername();
     socket.emit(mainRoom, {
       username: username,
-      type: "pub",
       roomID: roomID
     });
     gotoroom(socket, roomID, username);
@@ -54,7 +50,7 @@ io.on("connection", socket => {
     }
   }
 
-  socket.on('Video Time', (message) => {
+  socket.on("onProgress", (message) => {
     const uID = socket.id;
   
     io.to(users.get(uID)).emit('VTL', message);
@@ -97,7 +93,8 @@ const genUsername = () => {
 }
 // TODO: make this generate unique id
 const genRoomID = () => {
-  let roomID = Date.now().toString(36) + Math.random().toString(36).substr(2);
+  //let roomID = Date.now().toString(36) + Math.random().toString(36);
+  let roomID = "aaaaaaa";
   rooms.push(roomID);
   return roomID;
 }

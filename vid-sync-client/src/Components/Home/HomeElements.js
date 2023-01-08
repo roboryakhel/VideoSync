@@ -38,3 +38,6 @@ export const RoomMembers = styled.div`
 `;
 
 export const PickMovie = styled.div``;
+
+
+export const VideoContainer = styled.div``;

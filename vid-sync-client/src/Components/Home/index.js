@@ -1,44 +1,44 @@
 import React, {useState} from 'react';
-import {Container, Wrapper, RoomIDInp, ConnectBtn, Name, Type, RoomMembers, PickMovie} from './HomeElements';
+import ReactPlayer from 'react-player';
+import {Container, Wrapper, RoomIDInp, ConnectBtn, Name, Type, RoomMembers, PickMovie, VideoContainer} from './HomeElements';
 import { io } from "socket.io-client";
+import sample from "../../sample2.mp4";
 
 const URL = "ws://localhost:8080";
-let socket = "";
 
-let type ="";                           // pub or sub
-let username = "";                      // Server will give client randomly generated user name
-let roomID = "";                        // Servier will give a n digit identifier for your room
+let emit = false;
+let subroom = "aaaaaaa";
+let pr ="";
+let seekCycle = 0;
 
 export const Home = () => {
-    const [uname, setUname] = useState("");
+    const [uName, setUname] = useState("");
     const [room, setRoomID] = useState("0");
+    const [socket, setSocket] = useState(false);
+    const [isRoomValid, setisRoomValid] = useState(false);
+    const [type, setType] = useState("");
+    const [seekTime, setSeekTime] = useState(0);
 
-    const handleInput = (event) => {
-        roomID = event.target.value;
-        //console.log(roomIDisValid());
-    }
-
-    const roomIDisValid = () => {
-        return (roomID !== "") && (roomID.length === 16) && (!isNaN(roomID));
-    }
 
     const connect = () => {
-        if (roomIDisValid()) 
-            connectSubscriber(roomID);
+        if (type === "sub") 
+            connectSubscriber(subroom);  // TODO: remove hardcoded subroom.
         else  {
-            console.log("Room ID invlid or No RoomID. Connecting is room host...");
+            console.log("Room ID invlid or No RoomID. Connecting as host...");
             connectPublisher();
         } 
     }
     // Friend sends pubRoomID via msg and this client get put in that room.
     const connectSubscriber = (pubRoomID) => {
-        socket = io(URL, {
+        console.log("connecting subscriber");
+        const socket = io(URL, {
             extraHeaders: {
             type: "sub",
             roomID: pubRoomID
             }
         });
-       socket.on(pubRoomID, (args) => {
+        setSocket(socket);
+        socket.on(pubRoomID, (args) => {
              if (args === "Room does not exist") {
                 console.log("Could not connect to server. Room does not exist.");
                 socket.on("disconnect", () => {
@@ -47,52 +47,68 @@ export const Home = () => {
             }
              else {
                 console.log(args);
-                username = args.username
-                roomID = args.roomID;
-                type = args.type;
-                console.log(username," connected to room ", roomID, " as ", type);
+                setUname(args.username);
+                setRoomID(args.roomID);
+                setType(args.type);
+                console.log(uName," connected to room ", room, " as ", type);
             }
+            socket.on('VTL', (args) => {
+                setSeekTime(Math.floor(args.time));
+                console.log(seekTime + " " + args.time);
+
+            })
         });
     }
     
-    // Connect to Main room and get username, and roomID, then go to my own room
+    // Connect to server and get username, and roomID, then go to my own room
     const connectPublisher = () => {
-        socket = io(URL, {
+        const socket = io(URL, {
             withCredentials: true,
             extraHeaders: {
-                "type": "pub"
+                type: "pub"
             }
         });
-        console.log(socket.id, " connecting to Main room in server")
+        setSocket(socket);
+        console.log(socket.id, " connecting to server");
         socket.on("Main", (args) => {
-            username = args.username
-            roomID = args.roomID;
-            type = args.type;
-            console.log(username," connected to Main room ", roomID, " as ", type);
+            setUname(args.username);
+            setRoomID(args.roomID);
+            setType(args.type);
+            console.log(username," connected to room ", room, " as ", type);
             putPubinTheirRoom(socket);
-        });        
-        setUname(username);
-        setRoomID(roomID);
+        });
     }
 
     // Connect to client room and send init msg
     const putPubinTheirRoom = (socket) => {
         socket.on(roomID, (args) => {
             if (args.text === "Success")
-                console.log("You are now in room: ", roomID, ", ", username);
+                console.log("You are now in room: ", room, ", ", uName);
         });
     }
 
-    const sendTestMsg = () => {
-        socket.emit('Video Time', {
-            time: "34:12:00"
-          });
-
-          socket.on('VTL', (args) => {
-            console.log(args);
-          });
+    // TODO: fix this function
+    const handleInput = (event) => {
+        // roomID = event.target.value;
+        // setRoomID(event.target.value);
+        setType("sub");
     }
 
+    const onProgress = (event) => {
+        if (type === "sub" && seekCycle === 0) {
+            pr.seekTo(Math.floor(seekTime));
+            seekCycle = 100;
+        } else {
+            if (socket && emit) {
+                socket.emit("onProgress", {time:event.playedSeconds});
+                console.log("emmitted new time " + event.playedSeconds);
+            } else {
+                console.log("Socket not connected. Progress not emitted.");
+            }
+        }
+        if (type === "sub")
+            seekCycle--;
+    }
 
     return (
         <>
@@ -100,11 +116,14 @@ export const Home = () => {
                 <Container>
                     <RoomIDInp type="text" onChange={handleInput}></RoomIDInp>
                     <ConnectBtn onClick={connect}>Connect</ConnectBtn>
-                    <Name>Name: {uname} </Name>
+                    <Name>Name: {uName} </Name>
                     <Type>RoomID: {room} </Type>
-                    <ConnectBtn onClick={sendTestMsg}>Send</ConnectBtn>
+                    <ConnectBtn onClick={() => {emit = true;}}>Send</ConnectBtn>
                     <RoomMembers></RoomMembers>
                     <PickMovie></PickMovie>
+                    <VideoContainer>
+                        <ReactPlayer ref={(p) => { pr = p }} url={sample}  className="react-player" playing controls width="100%" height="100%" onProgress={onProgress} />                  
+                    </VideoContainer>
                 </Container>
             </Wrapper>
         </>
