@@ -9,20 +9,20 @@ export const Wrapper = styled.div`
 `;
 
 export const Container = styled.div`
-    width: 70%;
+    width: 25%;
     height:80%;
     padding-top: 100px;
     margin:auto;
 `;
 
 export const RoomIDInp = styled.input`
-    width: 200px;
+    width: 400px;
     height: 30px;    
-    font-size: 1.5em;
-    text-align:center;
+    font-size: 0.8em;
 `;
 
-export const ConnectBtn = styled.button`
+export const Btn = styled.button`
+    width:100%;
     display:block;
 `;
 
@@ -30,12 +30,12 @@ export const Name = styled.p``;
 
 export const Type = styled.p``;
 
-export const RoomMembers = styled.div`
-    height:120px;
-    width:420px;
-    border:1px solid #ccc;
-    overflow:auto;
+export const Join = styled.div`
+    display: flex;
+    flex-direction: row;
 `;
+
+
 
 export const PickMovie = styled.div``;
 

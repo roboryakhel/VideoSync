@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import ReactPlayer from 'react-player';
-import {Container, Wrapper, RoomIDInp, ConnectBtn, Name, Type, RoomMembers, PickMovie, VideoContainer} from './HomeElements';
+import {Container, Wrapper, RoomIDInp, Btn,Join, Name, Type, RoomMembers, PickMovie, VideoContainer} from './HomeElements';
 import { io } from "socket.io-client";
 import sample from "../../sample2.mp4";
+import { icn } from "react-icons/fa";
 
 const URL = "ws://localhost:8080";
 
@@ -18,6 +19,7 @@ export const Home = () => {
     const [isRoomValid, setisRoomValid] = useState(false);
     const [type, setType] = useState("");
     const [seekTime, setSeekTime] = useState(0);
+    const inputFile = useRef(null);
 
 
     const connect = () => {
@@ -74,14 +76,14 @@ export const Home = () => {
             setUname(args.username);
             setRoomID(args.roomID);
             setType(args.type);
-            console.log(username," connected to room ", room, " as ", type);
+            console.log(uName," connected to room ", room, " as ", type);
             putPubinTheirRoom(socket);
         });
     }
 
     // Connect to client room and send init msg
     const putPubinTheirRoom = (socket) => {
-        socket.on(roomID, (args) => {
+        socket.on(room, (args) => {
             if (args.text === "Success")
                 console.log("You are now in room: ", room, ", ", uName);
         });
@@ -93,6 +95,11 @@ export const Home = () => {
         // setRoomID(event.target.value);
         setType("sub");
     }
+
+    const selectMovie = () => {
+        // `current` points to the mounted file input element
+        inputFile.current.click();
+      };
 
     const onProgress = (event) => {
         if (type === "sub" && seekCycle === 0) {
@@ -113,17 +120,23 @@ export const Home = () => {
     return (
         <>
             <Wrapper>
-                <Container>
+                <Container id="sidebar" class="sidebar">
+                    <div id="trigger" class="trigger">
+                        <i class="fa fa-bars"></i>
+                    </div>
+                    <Btn onClick={connect}>Start a Party</Btn>
+                    <p> or </p>
+                    <Join>
                     <RoomIDInp type="text" onChange={handleInput}></RoomIDInp>
-                    <ConnectBtn onClick={connect}>Connect</ConnectBtn>
-                    <Name>Name: {uName} </Name>
+                    <Btn onClick={connect}>Join</Btn>
+                    </Join>
                     <Type>RoomID: {room} </Type>
-                    <ConnectBtn onClick={() => {emit = true;}}>Send</ConnectBtn>
-                    <RoomMembers></RoomMembers>
-                    <PickMovie></PickMovie>
-                    <VideoContainer>
+                    {/* <ConnectBtn onClick={() => {emit = true;}}>Send</ConnectBtn> */}
+                    <Btn onClick={selectMovie}>Select Movie</Btn>
+                    <input type='file' id='file' ref={inputFile} style={{display: 'none'}}/>
+                    {/* <VideoContainer>
                         <ReactPlayer ref={(p) => { pr = p }} url={sample}  className="react-player" playing controls width="100%" height="100%" onProgress={onProgress} />                  
-                    </VideoContainer>
+                    </VideoContainer> */}
                 </Container>
             </Wrapper>
         </>
