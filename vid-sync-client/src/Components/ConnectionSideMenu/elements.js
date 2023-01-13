@@ -3,20 +3,25 @@ import styled from "styled-components";
 
 
 export const Wrapper = styled.div`
-    width:100%;
-    height: 500px;
 
 `;
 
 export const Container = styled.div`
-    width: 25%;
-    height:80%;
-    padding-top: 100px;
+    width:90%;
+    height:100%;
     margin:auto;
 `;
 
+export const ContainerInner = styled.div`
+    // width:90%;
+    // height:100%;
+    // margin:auto;
+    margin-top:200px;
+`;
+
+
 export const RoomIDInp = styled.input`
-    width: 400px;
+    width:80%;
     height: 30px;    
     font-size: 0.8em;
 `;
@@ -26,9 +31,8 @@ export const Btn = styled.button`
     display:block;
 `;
 
-export const Name = styled.p``;
 
-export const Type = styled.p``;
+export const Text = styled.p``;
 
 export const Join = styled.div`
     display: flex;

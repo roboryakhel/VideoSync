@@ -41,9 +41,7 @@ io.on("connection", socket => {
       socket.join(r);
       let username = genUsername();
       socket.emit(r, {
-        username: username,
-        type: "sub",
-        roomID: r
+        username: username
       }); 
       users.set(socket.id, r);
       console.log("Socket: ",socket.id, " connected to this server",'\n',"has name: ",username, " and roomID: ",r,'\n'); 
@@ -78,7 +76,6 @@ io.on("connection", socket => {
 });
 
 
-
 const gotoroom = (socket, roomID, username) => {
   socket.join(roomID);
   socket.emit(roomID,{
@@ -93,8 +90,7 @@ const genUsername = () => {
 }
 // TODO: make this generate unique id
 const genRoomID = () => {
-  //let roomID = Date.now().toString(36) + Math.random().toString(36);
-  let roomID = "aaaaaaa";
+  let roomID = Date.now().toString(36) + Math.random().toString(36);
   rooms.push(roomID);
   return roomID;
 }
