@@ -8,13 +8,19 @@ html, body {
   position: fixed;
   width: 50px;
   height: 100%;
-  background-color: gray;
-  transition: all 0.5s ease;
-  border-right: 1px black solid;
+  background-color:rgba(255,255,255,0);
+  transition: all 0.8s ease;
+  /* border-right: 1px black solid; */
+  z-index: 100;
+}
+.sidebar:hover  {
+  background-color: rgba(150, 150, 150, 0.8);
 }
 
 .sidebar.open{
   width:300px;
+  background-color: rgba(150,150,150,0.8);
+
 }
 
 .sidebarInner{
@@ -34,14 +40,11 @@ html, body {
   cursor: pointer;
   display: flex;
   align-items: center;
-  /* padding:0px; */
-  /* margin:auto; */
 }
 
 .vidWrapper {
-  /* width:1920px; */
-  height:1000px;
-  background-image: radial-gradient(rgb(72, 114, 114) 0%, transparent 20%, rgb(82, 83, 90) 40%);
+  z-index:0;
+  height:100%;
 }
 
 .vidContainer {

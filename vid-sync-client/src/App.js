@@ -3,11 +3,12 @@ import './App.css';
 import { io } from "socket.io-client";
 import { ConnectionSideMenu } from './Components/ConnectionSideMenu';
 import { VideoPlayer } from './Components/VideoPlayer';
+import ReactPlayer from 'react-player';
+
 
 const URL = "ws://localhost:8080";
 
 let emit = false;
-// let subroom = "aaaaaaa";
 let pr ="";
 let seekCycle = 0;
 
@@ -15,17 +16,17 @@ function App() {
   const [uName, setUname] = useState("");
   const [room, setRoomID] = useState("0");
   const [socket, setSocket] = useState(false);
-  const [isRoomValid, setisRoomValid] = useState(false);
   const [type, setType] = useState("");
   const [seekTime, setSeekTime] = useState(0);
+  const [videoURL, setVideoURL] = useState("");
 
   function connect(t) {
-      if (t === "sub") 
-      connectSubscriber(room)
-      else  {
-        //   console.log("Room ID invlid or No RoomID. Connecting as host...");
-          connectPublisher();
-      } 
+      if (t === "sub") {
+        connectSubscriber(room)
+      }
+      else {
+        connectPublisher();
+      }
   }
   // Friend sends pubRoomID via msg and this client get put in that room.
   const connectSubscriber = (pubRoomID) => {
@@ -45,9 +46,9 @@ function App() {
               });              
           }
           else {
-            //   console.log(args);
+              console.log(args);
               setUname(args.username);
-            //   setRoomID(args.roomID);
+              setRoomID(args.roomID);
               console.log(uName," connected to room ", room, " as ", type);
               setSocket(socket);
               setType("sub");
@@ -67,23 +68,14 @@ function App() {
               type: "pub"
           }
       });
-      setSocket(socket);
-      console.log(socket.id, " connecting to server");
       socket.on("Main", (args) => {
-          setUname(args.username);
-          setRoomID(args.roomID);
-          console.log(uName," connected to room ", room, " as ", type);
-          putPubinTheirRoom(socket);
+        setUname(args.username);
+        setRoomID(args.roomID);
+        console.log(uName," connected to room ", room, " as ", type);
       });
       setType("pub");
-  }
+      setSocket(socket);
 
-  // Connect to client room and send init msg
-  const putPubinTheirRoom = (socket) => {
-      socket.on(room, (args) => {
-          if (args.text === "Success")
-              console.log("You are now in room: ", room, ", ", uName);
-      });
   }
 
   // TODO: fix this function
@@ -91,12 +83,14 @@ function App() {
     setRoomID(event.target.value);
   }
 
-  const onProgress = (event) => {
+  function onProgress(event) {
       if (type === "sub" && seekCycle === 0) {
-          pr.seekTo(Math.floor(seekTime));
-          seekCycle = 100;
+        const currTime = event.playedSeconds;
+        if (Math.abs(Math.floor(currTime)-seekTime) > 1)
+            pr.seekTo(Math.floor(seekTime));
+          seekCycle = 5;
       } else {
-          if (socket && emit) {
+          if (socket && type == "pub") {
               socket.emit("onProgress", {time:event.playedSeconds});
               console.log("emmitted new time " + event.playedSeconds);
           } else {
@@ -107,10 +101,27 @@ function App() {
           seekCycle--;
   }
 
+    function handleChangeURL(event)  {
+    setVideoURL(global.URL.createObjectURL(event.target.files[0]));
+    console.log(videoURL);
+    }
+
+    function ref(p) {
+        pr = p;
+    }
+
   return (
    <>
-    <ConnectionSideMenu con={connect} han={handleInput} r={room}/>
-    <VideoPlayer />
+    <ConnectionSideMenu con={connect} han={handleInput} r={room} chURL={handleChangeURL}/>
+    {/* <VideoPlayer ref={ref} url={videoURL} onProgress={onProgress}/> */}
+
+    <div className={"vidWrapper"}>
+        <div className={"vidContainer"}>
+            <div>
+                <ReactPlayer ref={ref} url={videoURL}  className="react-player" playing controls width="100%" height="100%" onProgress={onProgress} />                  
+            </div>
+        </div>
+    </div>
    </>
   );
 }

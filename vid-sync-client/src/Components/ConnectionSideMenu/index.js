@@ -18,6 +18,7 @@ export const ConnectionSideMenu = (props) => {
         // `current` points to the mounted file input element
         inputFile.current.click();
     };
+
     return (
         <>
             <Wrapper className={sidebarClass}>
@@ -34,7 +35,9 @@ export const ConnectionSideMenu = (props) => {
                         </Join>
                         <Text>RoomID: {props.r}</Text>
                         <Btn onClick={()=>{selectMovie()}} >Select Movie</Btn>
-                        <input type='file' id='file' ref={inputFile} style={{display: 'none'}}/>
+
+                        <input type='file' id='file' ref={inputFile} style={{display: 'none'}} onChange={props.chURL}/> 
+                        
                     </ContainerInner>
                 </Container>
             </Wrapper>
