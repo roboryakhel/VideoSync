@@ -16,7 +16,10 @@ export const ContainerInner = styled.div`
     // width:90%;
     // height:100%;
     // margin:auto;
+    padding-left:50px;
+    padding-right:50px;
     margin-top:200px;
+    width:200px;
 `;
 
 
@@ -29,6 +32,9 @@ export const RoomIDInp = styled.input`
 export const Btn = styled.button`
     width:100%;
     display:block;
+    margin-top: 50px;
+    margin-bottom: 50px;
+
 `;
 
 

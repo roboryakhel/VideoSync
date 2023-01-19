@@ -1,6 +1,6 @@
 Server
 
-    1. Make usernames Unique
-    2. Add disconnection : what if there are n people and the pub disconnects?
-    3. complete the UI 
-    4. add loop for continuous time broadcasting
+
+client
+
+    1.  create react routes so subscribers can access their rooms like http://:clientURl/RoomID - this will load client putting user in that room. 

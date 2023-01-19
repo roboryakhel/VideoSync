@@ -10,12 +10,11 @@ export const ConnectionSideMenu = (props) => {
     const sidebarClass = sidebarOpen ? "sidebar open" : "sidebar";
     const sidebarInnerClass = sidebarOpen ? "sidebarInner open" : "sidebarInner";
 
-    const handleViewSidebar = () => {
+    const handleViewSidebar = (props) => {
         setSideBarOpen(!sidebarOpen);
     };
 
     const selectMovie = () => {
-        // `current` points to the mounted file input element
         inputFile.current.click();
     };
 
@@ -27,17 +26,10 @@ export const ConnectionSideMenu = (props) => {
                         <FaBars></FaBars>
                     </div>
                     <ContainerInner className={sidebarInnerClass} >
-                        <Btn onClick={()=>{props.con("pub")}}>Start a Party</Btn>
-                        <p> or </p>
-                        <Join>
-                            <RoomIDInp type="text" onChange={(e)=>{props.han(e)}}></RoomIDInp>
-                            <Btn id="joinBtn" onClick={()=>{props.con("sub")}}>Join</Btn>
-                        </Join>
-                        <Text>RoomID: {props.r}</Text>
-                        <Btn onClick={()=>{selectMovie()}} >Select Movie</Btn>
-
+                        <Btn className={"button-23"} onClick={()=>{props.con("pub")}}>Start a Party</Btn>
+                        <Btn className={"button-23"} onClick={props.copyURL} >Copy URL</Btn>
+                        <Btn className={"button-23 selectBtn"} onClick={()=>{selectMovie()}} >Select Movie</Btn>
                         <input type='file' id='file' ref={inputFile} style={{display: 'none'}} onChange={props.chURL}/> 
-                        
                     </ContainerInner>
                 </Container>
             </Wrapper>

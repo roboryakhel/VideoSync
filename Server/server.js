@@ -84,11 +84,9 @@ const gotoroom = (socket, roomID, username) => {
   users.set(socket.id, roomID);
 }
 
-// TODO: make this generate unique name
 const genUsername = () => {
   return usernames[Math.floor(Math.random() * usernames.length)];
 }
-// TODO: make this generate unique id
 const genRoomID = () => {
   let roomID = Date.now().toString(36) + Math.random().toString(36);
   rooms.push(roomID);
