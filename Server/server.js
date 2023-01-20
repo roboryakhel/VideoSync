@@ -55,22 +55,10 @@ io.on("connection", socket => {
     console.log (message);
   });
 
-  socket.on("disconnect", () => {
-    console.log(socket.id +" disconnected");
-    users.delete(socket.id);
-    // const user = removeUser(socketio.id);
-  
-    // if (user) {
-    //   io.to(user.room).emit('message', {
-    //     user: 'adminX',
-    //     text: `${user.name.toUpperCase()} has left.`
-    //   });
-    //   io.to(user.room).emit('roomData', {
-    //     room: user.room,
-    //     users: getUsersInRoom(user.room)
-    //   });
-    // }
-  });
+  // socket.on("disconnect", () => {
+  //   console.log(socket.id +" disconnected");
+  //   users.delete(socket.id);
+  // });
 
   console.log(users);
 });

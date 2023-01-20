@@ -1,6 +1,23 @@
+Logic to implement
+
+    1.  If room pub leaves, then randomly choose new pub. Update the client accordingly
+    2.  If current user is pub and socket is connected, user cannot create another party unless they are sub.
+    3.  When client closes tab that socket should disconnect.
+    4.  Subscriber should Pause vid when Publisher pauses vid. This change could be on client or server side. 
+
 Server
 
+    1.  Write function to emit user data for all users in a room. Used to display room members on client side.
+    2.  ensure client tab closure disconnects client. 
+    3.  Keep track of room data. If room pub leaves, choose new pub and emit the data in room.
 
-client
+Client
 
-    1.  create react routes so subscribers can access their rooms like http://:clientURl/RoomID - this will load client putting user in that room. 
+    1.  Fix the FaBars padding on collapsed sidebar.
+    2.  Sidebar should disappear after few seconds when collapsed.
+    3.  Link the icons from the sidebar to functions in the components.
+    4.  Add CSS transition for the sidebar content. Icons, buttons, etc.
+    5.  Write function to display user data when user icon clicked.
+    6.  Write function to query display room members when members icon clicked.
+    7.  Listen to server on whether or not pub disconnected and you are new pub.
+    8.  Subscriber should pause vide when the seektime is not different from previous. It could keep a buffer of seek times ?

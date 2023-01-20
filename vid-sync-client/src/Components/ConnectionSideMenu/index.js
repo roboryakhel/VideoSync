@@ -1,8 +1,6 @@
 import React, {useState, useRef} from 'react';
-import {Container, Wrapper, RoomIDInp, Btn,Join, Text, ContainerInner } from './elements';
-
-import { FaBars } from "react-icons/fa";
-
+import {Container, Wrapper, Btn, ContainerInner, Horizontal,Icon, ChatContainer, SelVidIcon } from './elements';
+import { FaBars, FaUsers, FaLink, FaUserAlt, FaFileVideo } from "react-icons/fa";
 
 export const ConnectionSideMenu = (props) => {
     const [sidebarOpen, setSideBarOpen] = useState(false);
@@ -22,14 +20,22 @@ export const ConnectionSideMenu = (props) => {
         <>
             <Wrapper className={sidebarClass}>
                 <Container>
-                    <div id="trigger" className={"closebtn"} onClick={handleViewSidebar} >
-                        <FaBars></FaBars>
-                    </div>
+                    <Horizontal className={"openCloseBar"}>
+                        <Icon className={"trigger"} onClick={handleViewSidebar}><FaBars></FaBars></Icon>
+                        <Icon className={sidebarInnerClass}><FaLink onClick={props.copyURL}></FaLink></Icon>
+                        <Icon className={sidebarInnerClass}><FaUsers></FaUsers></Icon>
+                        <Icon className={sidebarInnerClass}><FaUserAlt></FaUserAlt></Icon>
+                    </Horizontal>
                     <ContainerInner className={sidebarInnerClass} >
-                        <Btn className={"button-23"} onClick={()=>{props.con("pub")}}>Start a Party</Btn>
-                        <Btn className={"button-23"} onClick={props.copyURL} >Copy URL</Btn>
-                        <Btn className={"button-23 selectBtn"} onClick={()=>{selectMovie()}} >Select Movie</Btn>
-                        <input type='file' id='file' ref={inputFile} style={{display: 'none'}} onChange={props.chURL}/> 
+                        <Horizontal className={"startBar"}>
+                            <Btn className={"button-23 startPty"} onClick={()=>{props.con()}}>Start a Party</Btn>
+                            <SelVidIcon><FaFileVideo onClick={()=>{selectMovie()}}></FaFileVideo></SelVidIcon>
+                            <input type='file' id='file' ref={inputFile} style={{display: 'none'}} onChange={props.chURL}/>
+                        </Horizontal>
+                    </ContainerInner>
+                    <ChatContainer className={sidebarInnerClass}></ChatContainer>
+                    <ContainerInner className={sidebarInnerClass} >
+                        <Btn className={"button-24 disconn"} onClick={()=>{props.disc()}}>Disconnect</Btn>
                     </ContainerInner>
                 </Container>
             </Wrapper>

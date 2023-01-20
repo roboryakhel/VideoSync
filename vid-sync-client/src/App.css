@@ -10,7 +10,6 @@ html, body {
   height: 100%;
   background-color:rgba(255,255,255,0);
   transition: all 0.8s ease;
-  /* border-right: 1px black solid; */
   z-index: 100;
 }
 .sidebar:hover  {
@@ -18,7 +17,7 @@ html, body {
 }
 
 .sidebar.open{
-  width:300px;
+  width:400px;
   background-color: #f1f3f4;
 
 }
@@ -67,9 +66,45 @@ html, body {
   opacity: 1;
 }
 
+/* CSS */
+.button-24 {
+  background: #FF4742;
+  border: 1px solid #FF4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 20px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 23px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+}
+
+.button-24:hover,
+.button-24:active {
+  background-color: initial;
+  background-position: 0 0;
+  color: #FF4742;
+}
+
+.button-24:active {
+  opacity: .5;
+}
+
 .selectBtn {
   margin-top: 200px;
-
 }
 
 .sidebarInner{
@@ -77,14 +112,26 @@ html, body {
 }
 .sidebarInner.open {
   display:block;
+  transition: opacity 1s ease-in;
+  opacity: 1;
+
+
 }
 
-#joinBtn {
-  width: 20%;
-  margin: 0px;
+.openCloseBar {
+  border-bottom: 1px solid grey;
 }
 
-#trigger {
+.startBar {
+  margin-top:50px;
+  margin-bottom:50px;
+}
+
+.disconn {
+  margin-top: 50px;
+}
+
+.trigger {
   height: 50px;
   font-size: 24px;
   cursor: pointer;

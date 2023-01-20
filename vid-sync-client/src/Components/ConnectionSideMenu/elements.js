@@ -13,41 +13,36 @@ export const Container = styled.div`
 `;
 
 export const ContainerInner = styled.div`
-    // width:90%;
-    // height:100%;
-    // margin:auto;
-    padding-left:50px;
-    padding-right:50px;
-    margin-top:200px;
-    width:200px;
-`;
-
-
-export const RoomIDInp = styled.input`
-    width:80%;
-    height: 30px;    
-    font-size: 0.8em;
+    margin-top:50px;
+    margin:auto;
+    width:300px;
 `;
 
 export const Btn = styled.button`
-    width:100%;
+    // width:100%;
     display:block;
-    margin-top: 50px;
-    margin-bottom: 50px;
-
 `;
 
-
-export const Text = styled.p``;
-
-export const Join = styled.div`
-    display: flex;
-    flex-direction: row;
+export const Horizontal = styled.div`
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
 `;
 
+export const Icon = styled.div`
+    font-size: 24px;
+    cursor: pointer;
+`;
 
+export const ChatContainer = styled.div`
+    width:95%;
+    height:68%;
+    margin:auto;
+    background-color: #c5c7c9;
+`;
 
-export const PickMovie = styled.div``;
-
-
-export const VideoContainer = styled.div``;
+export const SelVidIcon = styled.div`
+    font-size: 35px;
+    cursor: pointer;
+`;
