@@ -12,8 +12,7 @@
 /build
 
 # media
-/src/sample.mp4
-/src/sample2.mp4
+
 
 # misc
 .DS_Store
