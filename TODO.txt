@@ -8,8 +8,8 @@ Logic to implement
 Server
 
     1.  Write function to emit user data for all users in a room. Used to display room members on client side.
-    2.  ensure client tab closure disconnects client. 
     3.  Keep track of room data. If room pub leaves, choose new pub and emit the data in room.
+    4.  Write function that assigns usernames out of username bucket or take username from user. 
 
 Client
 

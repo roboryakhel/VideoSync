@@ -29,7 +29,7 @@ io.on("connection", socket => {
       username: username,
       roomID: roomID
     });
-    gotoroom(socket, roomID, username);
+    goToRoom(socket, roomID, username);
     console.log("Socket: ",socket.id, " connected to this server",'\n',"has name: ",username, " and roomID: ",roomID,'\n'); 
   } 
   else {
@@ -55,16 +55,15 @@ io.on("connection", socket => {
     console.log (message);
   });
 
-  // socket.on("disconnect", () => {
-  //   console.log(socket.id +" disconnected");
-  //   users.delete(socket.id);
-  // });
+  socket.on("disconnect", () => {
+    console.log(socket.id +" disconnected");
+    users.delete(socket.id);
+  });
 
   console.log(users);
 });
 
-
-const gotoroom = (socket, roomID, username) => {
+const goToRoom = (socket, roomID, username) => {
   socket.join(roomID);
   socket.emit(roomID,{
     text: "Success"
@@ -75,6 +74,7 @@ const gotoroom = (socket, roomID, username) => {
 const genUsername = () => {
   return usernames[Math.floor(Math.random() * usernames.length)];
 }
+
 const genRoomID = () => {
   let roomID = Date.now().toString(36) + Math.random().toString(36);
   rooms.push(roomID);

@@ -34,9 +34,6 @@ export const ConnectionSideMenu = (props) => {
                         </Horizontal>
                     </ContainerInner>
                     <ChatContainer className={sidebarInnerClass}></ChatContainer>
-                    <ContainerInner className={sidebarInnerClass} >
-                        <Btn className={"button-24 disconn"} onClick={()=>{props.disc()}}>Disconnect</Btn>
-                    </ContainerInner>
                 </Container>
             </Wrapper>
         </>
