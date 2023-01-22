@@ -14,6 +14,7 @@ Server
 Client
 
     1.  Fix the FaBars padding on collapsed sidebar.
+this guy is annoying
     2.  Sidebar should disappear after few seconds when collapsed.
     3.  Link the icons from the sidebar to functions in the components.
     4.  Add CSS transition for the sidebar content. Icons, buttons, etc.
