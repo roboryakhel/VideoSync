@@ -12,14 +12,7 @@ const io = require("socket.io")(server, {
   },
 });
 
-const usernames = [
-  "Watcher1",
-  "Watcher2",
-  "Watcher3",
-  "Watcher4",
-  "Watcher5",
-  "Watcher6",
-]; // Server has list of usernames that it uses to randomly assign to clients
+let usernames = ["rachel", "chandler", "donald", "trey", "abed", "percy"]; // Server has list of usernames that it uses to randomly assign to clients
 const mainRoom = "Main"; // All clients initally connect to main room
 
 let rooms = []; // List of rooms that the server has
@@ -33,9 +26,8 @@ io.on("connection", (socket) => {
     // client gets his username, and roomid
     let roomID = genRoomID();
     let username = genUsername();
-    if (!room[user]) {
-      room[user] = [];
-    room[user].push(username);
+
+    room[username] = socket.id;
     socket.emit(mainRoom, {
       username: username,
       roomID: roomID,
@@ -54,13 +46,17 @@ io.on("connection", (socket) => {
     );
   } else {
     let r = socket.handshake.headers.roomid;
-    if (room.get().length !== usernames.length) {
+    if (room.size == usernames.length) {
+      socket.emit(r, "Room is full");
+      console.log("Room is full", "\n");
+    } else {
       if (!rooms.includes(r)) {
         console.log("Bad connection attempt. Disconnecting...");
         socket.emit(r, "Room does not exist");
       } else {
         socket.join(r);
         let username = genUsername();
+        room[username] = socket.id;
         socket.emit(r, {
           username: username,
         });
@@ -75,18 +71,10 @@ io.on("connection", (socket) => {
           " and roomID: ",
           r,
           "\n"
-      );
+        );
+      }
     }
-  } else {
-    console.log(
-      "Socket: ",
-      socket.id,
-      " is full",
-      "\n"
-    );
-
   }
-}
 
   socket.on("onProgress", (message) => {
     const uID = socket.id;
@@ -98,8 +86,11 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(socket.id + " disconnected");
     users.delete(socket.id);
+    const vr = Object.keys(room).find((key) => room[key] === socket.id);
+    console.log(vr);
+    delete room[vr];
   });
-
+  console.log(room);
   console.log(users);
 });
 
@@ -112,8 +103,15 @@ const goToRoom = (socket, roomID, username) => {
 };
 
 const genUsername = () => {
-  // usernames[Math.floor(Math.random() * usernames.length)];
-  return usernames[room.get().length];
+  let username = usernames[Math.floor(Math.random() * usernames.length)];
+  while (room[username]) {
+    username = usernames[Math.floor(Math.random() * usernames.length)];
+    // if (!room[username]) {
+
+    // }
+    // x = 1;
+  }
+  return username;
 };
 
 const genRoomID = () => {
