@@ -4,51 +4,75 @@ const express = require('express');
 const { InMemoryDatabase } = require('in-memory-database')
 const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server,{
+const io = require("socket.io")(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     allowedHeaders: ["type", "roomID"],
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
-
-const usernames = ["bob", "alice", "sam", "john"];      // Server has list of usernames that it uses to randomly assign to clients
-const mainRoom = "Main";            // All clients initially connect to main room
-let rooms = [];                     // List of rooms that the server has
+let usernames = ["bigfootisreal", "SaintBroseph", "FrostedCupcake", "kim_chi", "Babushka", "ashley_said_what"]; // Server has list of usernames that it uses to randomly assign to clients
+const mainRoom = "Main"; // All clients initally connect to main room
+const roomToUsers = new InMemoryDatabase();
 const usersToRooms = new InMemoryDatabase();
-const roomsToUsers = {};
 
 // client connects
-io.on("connection", socket => {
+io.on("connection", (socket) => {
   if (socket.handshake.headers.type === "pub") {
     // this is for publishers
     // client gets his username, and roomid
     let roomID = genRoomID();
     let username = genUsername();
+    
+    roomToUser.set(roomID, new Array().fill(username);
     socket.emit(mainRoom, {
       username: username,
-      roomID: roomID
+      roomID: roomID,
     });
     goToRoom(socket, roomID, username);
-    console.log("Socket: ",socket.id, " connected to this server",'\n',"has name: ",username, " and roomID: ",roomID,'\n'); 
-  } 
-  else {
+    console.log(
+      "Socket: ",
+      socket.id,
+      " connected to this server",
+      "\n",
+      "has name: ",
+      username,
+      " and roomID: ",
+      roomID,
+      "\n"
+    );
+  } else {
     let r = socket.handshake.headers.roomid;
-    if (!rooms.includes(r)) {
-      console.log("Bad connection attempt. Disconnecting...");
-      socket.emit(r,"Room does not exist");
+    if (!roomToUser.contains(r) && roomToUser.get(r).length() > usernames.length) {
+        console.log("Bad connection attempt. Disconnecting...");
+        socket.emit(r, "Room does not exist or is full");
+        console.log("Room is full", "\n");
     } else {
-      socket.join(r);
-      let username = genUsername();
-      socket.emit(r, {
-        username: username
-      }); 
-      usersToRooms.set(socket.id, r);
-      console.log("Socket: ",socket.id, " connected to this server",'\n',"has name: ",username, " and roomID: ",r,'\n'); 
-    }
-  }
+        socket.join(r);
+        let username = genUsername(r);
+        roomToUser.set(r, roomToUser.get(r).append(username))
+        socket.emit(r, {
+          username: username,
+        });
+        usersToRooms.set(socket.id, r);
+        console.log(
+          "Socket: ",
+          socket.id,
+          " connected to this server",
+          "\n",
+          "has name: ",
+          username,
+          " and roomID: ",
+          r,
+          "\n"
+        );
+      }
+   }
+
+  console.log(roomsToUsers);
+  console.log(usersToRooms);
 
   socket.on("onProgress", (message) => {  
     io.to(users.get(socket.id)).emit('VTL', message);
@@ -74,22 +98,26 @@ io.on("connection", socket => {
 
 const goToRoom = (socket, roomID, username) => {
   socket.join(roomID);
-  socket.emit(roomID,{
-    text: "Success"
+  socket.emit(roomID, {
+    text: "Success",
   });
   usersToRooms.set(socket.id, roomID);
 }
 
-const genUsername = () => {
-  return usernames[Math.floor(Math.random() * usernames.length)];
-}
+
+// Fix this.
+const genUsername = (room) => {
+  let uL = roomToUsers.get(room);
+  while (room[username]) {
+    username = usernames[Math.floor(Math.random() * usernames.length)];
+  }
+  return username;
+};
 
 const genRoomID = () => {
   let roomID = Date.now().toString(36) + Math.random().toString(36);
   rooms.push(roomID);
   return roomID;
-}
+};
 
-server.listen(process.env.PORT || 8080, () =>
-  console.log('Server is running')
-);
+server.listen(process.env.PORT || 8080, () => console.log("Server is running"));

@@ -8,7 +8,9 @@ Logic to implement
 Server
 
     1.  Write function to emit user data for all users in a room. Used to display room members on client side.
-    4.  Write function that assigns usernames out of username bucket or take username from user. 
+    5.  Re-utilise user names once a user disconnects
+    6.  Restrict number of users allowed in room.
+
 
 Client
 
