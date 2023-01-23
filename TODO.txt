@@ -8,9 +8,9 @@ Logic to implement
 Server
 
     1.  Write function to emit user data for all users in a room. Used to display room members on client side.
-    3.  Keep track of room data. If room pub leaves, choose new pub and emit the data in room.
     5.  Re-utilise user names once a user disconnects
     6.  Restrict number of users allowed in room.
+
 
 Client
 
