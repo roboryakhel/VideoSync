@@ -51,10 +51,15 @@ function App() {
                 uName = args.username;
                 type = "sub";
                 console.log(uName," connected to room ", room, " as ", type);
-                socket.on('VTL', (args) => {
+                socket.on("VTL", (args) => {
                     seekTime = Math.floor(args.time);
                     console.log(seekTime);
-                })
+                });
+                socket.on("Admin", (args) => {
+                    console.log(args);
+                    if(args.type === "pub")
+                        type = "pub";
+                });
             }
         });
     }
