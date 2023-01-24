@@ -13,61 +13,38 @@ const io = require("socket.io")(server, {
   },
 });
 
-let usernames = ["bigfootisreal", "SaintBroseph", "FrostedCupcake", "kim_chi", "Babushka", "ashley_said_what"]; // Server has list of usernames that it uses to randomly assign to clients
-const mainRoom = "Main"; // All clients initally connect to main room
-const roomToUsers = new InMemoryDatabase();
-const usersToRooms = new InMemoryDatabase();
+let usernames = ["BigHoss","bigfootisreal", "SaintBroseph", "FrostedCupcake", "kim_chi", "Babushka"];
+const mainRoom = "Main";
+const roomsToUsers = new InMemoryDatabase();    // Map of rooms to usernames: roomID --> [uName1, uName2, ...]
+const usersToRooms = new InMemoryDatabase();    // Map of users to rooms: socket.id --> roomID
 
 // client connects
 io.on("connection", (socket) => {
   if (socket.handshake.headers.type === "pub") {
-    // this is for publishers
-    // client gets his username, and roomid
     let roomID = genRoomID();
-    let username = genUsername();
+    let username = usernames[0];    // All publishers will be names "BigHoss"
     
-    roomToUser.set(roomID, new Array().fill(username);
+    roomsToUsers.set(roomID, username);
     socket.emit(mainRoom, {
       username: username,
       roomID: roomID,
     });
     goToRoom(socket, roomID, username);
-    console.log(
-      "Socket: ",
-      socket.id,
-      " connected to this server",
-      "\n",
-      "has name: ",
-      username,
-      " and roomID: ",
-      roomID,
-      "\n"
-    );
+    console.log("Socket: ",socket.id," connected to this server as PUB and has name: ", username," and roomID: ",roomID);
   } else {
-    let r = socket.handshake.headers.roomid;
-    if (!roomToUser.contains(r) && roomToUser.get(r).length() > usernames.length) {
-        console.log("Bad connection attempt. Disconnecting...");
-        socket.emit(r, "Room does not exist or is full");
-        console.log("Room is full", "\n");
-    } else {
-        socket.join(r);
-        let username = genUsername(r);
-        roomToUser.set(r, roomToUser.get(r).append(username))
-        socket.emit(r, {
+    let room = socket.handshake.headers.roomid;
+    if (!roomsToUsers.has(room) || roomSize(room) > 6) {
+        console.log("Room does not exist or is full");
+        socket.emit(room, "Room does not exist or is full");
+    } else if (roomsToUsers.has(room) && roomSize(room) < 6){
+        socket.join(room);
+        let username = genUsername(room);
+        roomsToUsers.set(room, roomsToUsers.get(room)+","+username); // get the array, slice is with comma delimit and reconstrust a new one. 
+        socket.emit(room, {
           username: username,
         });
-        usersToRooms.set(socket.id, r);
-        console.log(
-          "Socket: ",
-          socket.id,
-          " connected to this server",
-          "\n",
-          "has name: ",
-          username,
-          " and roomID: ",
-          r,
-          "\n"
-        );
+        usersToRooms.set(socket.id, room);
+        console.log("Socket: ",socket.id," connected to this server as SUB and has name: ", username, " and roomID: ", room,);
       }
    }
 
@@ -75,12 +52,11 @@ io.on("connection", (socket) => {
   console.log(usersToRooms);
 
   socket.on("onProgress", (message) => {  
-    io.to(users.get(socket.id)).emit('VTL', message);
+    io.to(usersToRooms.get(socket.id)).emit('VTL', message);
     console.log (message);
   });
 
   socket.on("disconnect", () => {
-    console.log(socket.id +" disconnected");
     let room = usersToRooms.get(socket.id);
 
     for (const u of usersToRooms.keys()) {
@@ -91,9 +67,9 @@ io.on("connection", (socket) => {
       }
     }
     usersToRooms.delete(socket.id);
+    console.log(socket.id +" disconnected");
+    console.log(usersToRooms);
   });
-
-  console.log(usersToRooms);
 });
 
 const goToRoom = (socket, roomID, username) => {
@@ -104,20 +80,24 @@ const goToRoom = (socket, roomID, username) => {
   usersToRooms.set(socket.id, roomID);
 }
 
-
-// Fix this.
 const genUsername = (room) => {
-  let uL = roomToUsers.get(room);
-  while (room[username]) {
-    username = usernames[Math.floor(Math.random() * usernames.length)];
+  let uL = roomsToUsers.get(room);
+
+  for (const name of usernames) {
+    if (!uL.includes(name))
+      return name;
   }
-  return username;
 };
 
 const genRoomID = () => {
   let roomID = Date.now().toString(36) + Math.random().toString(36);
-  rooms.push(roomID);
   return roomID;
 };
+
+
+const roomSize = (room) => {
+  return roomsToUsers.get(room).split(",").length
+}
+
 
 server.listen(process.env.PORT || 8080, () => console.log("Server is running"));
