@@ -15,22 +15,25 @@ const io = require("socket.io")(server, {
 
 let usernames = ["BigHoss","bigfootisreal", "SaintBroseph", "FrostedCupcake", "kim_chi", "Babushka"];
 const mainRoom = "Main";
-const roomsToUsers = new InMemoryDatabase();    // Map of rooms to usernames: roomID --> [uName1, uName2, ...]
+const roomsToUsers = new InMemoryDatabase();    // Map of rooms to usernames: roomID --> "uName1, uName2, ..."
 const usersToRooms = new InMemoryDatabase();    // Map of users to rooms: socket.id --> roomID
+const socketToType = new InMemoryDatabase();    // Map of socketID to user Type: socket.id --> "pub"/"sub"
 
 // client connects
 io.on("connection", (socket) => {
+  console.log("==================== On Connection ====================");
   if (socket.handshake.headers.type === "pub") {
     let roomID = genRoomID();
-    let username = usernames[0];    // All publishers will be names "BigHoss"
+    let username = usernames[0];
     
-    roomsToUsers.set(roomID, username);
+    roomsToUsers.set(roomID, socket.id+":"+username);
+    socketToType.set(socket.id, "pub");
     socket.emit(mainRoom, {
       username: username,
       roomID: roomID,
     });
-    goToRoom(socket, roomID, username);
-    console.log("Socket: ",socket.id," connected to this server as PUB and has name: ", username," and roomID: ",roomID);
+    goToRoom(socket, roomID);
+    console.log("Socket: "+socket.id+" connected to this server as PUB and has name: "+username+" and roomID: "+roomID);
   } else {
     let room = socket.handshake.headers.roomid;
     if (!roomsToUsers.has(room) || roomSize(room) > 6) {
@@ -39,40 +42,49 @@ io.on("connection", (socket) => {
     } else if (roomsToUsers.has(room) && roomSize(room) < 6){
         socket.join(room);
         let username = genUsername(room);
-        roomsToUsers.set(room, roomsToUsers.get(room)+","+username); // get the array, slice is with comma delimit and reconstrust a new one. 
+        roomsToUsers.set(room, roomsToUsers.get(room)+","+socket.id+":"+username);
+        socketToType.set(socket.id, "sub");
         socket.emit(room, {
           username: username,
         });
         usersToRooms.set(socket.id, room);
-        console.log("Socket: ",socket.id," connected to this server as SUB and has name: ", username, " and roomID: ", room,);
+        console.log("Socket: "+socket.id+" connected to this server as SUB and has name: "+username+" and roomID: "+room);
       }
    }
 
   console.log(roomsToUsers);
   console.log(usersToRooms);
 
-  socket.on("onProgress", (message) => {  
-    io.to(usersToRooms.get(socket.id)).emit('VTL', message);
+  socket.on("CH0", (message) => {  
+    io.to(usersToRooms.get(socket.id)).emit("CH1", message);
     console.log (message);
   });
 
   socket.on("disconnect", () => {
     let room = usersToRooms.get(socket.id);
 
-    for (const u of usersToRooms.keys()) {
-      if (usersToRooms.get(u) === room  && u != socket.id) {
-        console.log(u + " will be the new pub");
-        socket.broadcast.to(u).emit( 'Admin', {type:"pub",msg:"you are the new pub!"} );
-        break;
-      }
+    if (roomSize(room) < 2)            // If there is only 1 person in the room and they are leaving
+      roomsToUsers.delete(room);
+    else {
+      // If pub is leaving
+       if (socketToType.get(socket.id) == "pub") {
+          for (const u of usersToRooms.keys()) {
+            if (usersToRooms.get(u) === room  && u != socket.id) {
+              console.log(u + " will be the new pub");
+              socket.broadcast.to(u).emit( 'Admin', {type:"pub",msg:"you are the new pub!"} );
+              break;
+            }
+          }
+        }
+      roomsToUsers.set(room, roomsToUsers.get(room).split(",").filter(e => !e.includes(socket.id)));
     }
     usersToRooms.delete(socket.id);
-    console.log(socket.id +" disconnected");
+    console.log(roomsToUsers);
     console.log(usersToRooms);
   });
 });
 
-const goToRoom = (socket, roomID, username) => {
+const goToRoom = (socket, roomID) => {
   socket.join(roomID);
   socket.emit(roomID, {
     text: "Success",
@@ -94,10 +106,15 @@ const genRoomID = () => {
   return roomID;
 };
 
-
 const roomSize = (room) => {
-  return roomsToUsers.get(room).split(",").length
+  let size = 0;
+  for (const u of usersToRooms.keys()) {
+    if (usersToRooms.get(u) === room) {
+      size++;
+    }
+  }
+  // return roomsToUsers.get(room).split(",").length
+  return size;
 }
-
 
 server.listen(process.env.PORT || 8080, () => console.log("Server is running"));
