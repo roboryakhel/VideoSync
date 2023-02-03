@@ -1,27 +1,24 @@
-Logic to implement
+Logic to implement :
 
-    2.  If current user is pub and socket is connected, user cannot create another party unless they are sub.
+    [X]  If current user is pub and socket is connected, user cannot create another party unless they are sub.
+    [X]  A user can only be connected once, no matter how many browser tabs they have open. Can be identified via their authentication token.
+    [X]  Must work in a clustered environment. Individual server nodes should be able to go down without affecting the rest of the system.
+    [X]  Authorization tokens should be passed via a dedicated authentication event after the connection is established.
 
-Server
-
-    1.  Write function to emit user data for all users in a room. Used to display room members on client side.
-
-
-Client
-
-    1.  Fix the FaBars padding on collapsed sidebar.
-    2.  Sidebar should disappear after few seconds when collapsed.
-    3.  Link the icons from the sidebar to functions in the components.
-    4.  Add CSS transition for the sidebar content. Icons, buttons, etc.
-    5.  Write function to display user data when user icon clicked.
-    6.  Write function to query display room members when members icon clicked.
-    7.  Listen to server on whether or not pub disconnected and you are new pub.
+Server :
 
 
-
+Client :
+    [X]  Fix the FaBars padding on collapsed sidebar.
+    [X]  Add CSS transition for the sidebar content. Icons, buttons, etc.
+ 
 Done :
-    4.  Subscriber should Pause vid when Publisher pauses vid. This change could be on client or server side.
-    1.  If room pub leaves, then randomly choose new pub. Update the client accordingly.
-    3.  When client closes tab that socket should disconnect.
-    4.  Restrict number of allowed users in a room.
+    [X]  Subscriber should Pause vid when Publisher pauses vid. This change could be on client or server side.
+    [X]  If room pub leaves, then randomly choose new pub. Update the client accordingly.
+    [X]  When client closes tab that socket should disconnect.
+    [X]  Restrict number of allowed users in a room.
+    [X]  Write function to display user data when user icon clicked.
+    [X]  Write function to query display room members when members icon clicked.
+    [X]  Listen to server on whether or not pub disconnected and you are new pub.
+    [X]  Write function to emit user data for all users in a room. Used to display room members on client side.
 

@@ -21,6 +21,7 @@ function App() {
     const [videoURL, setVideoURL] = useState("");
     const [playVid, setPlayVid] = useState(true);
     const urlParam = searchParams.get("r")
+    const [otherRoomMembers, setORMs] = useState("");
 
     useEffect(
         () => {
@@ -60,7 +61,9 @@ function App() {
                     }
                     else if (args.type === "pause") {
                         setPlayVid(false);
-                    }  
+                    }    
+                    else if (args.type === "new user")
+                    setORMs(args.msg); 
                 });
                 socket.on("Admin", (args) => {
                     console.log(args);
@@ -86,11 +89,13 @@ function App() {
         });
 
         socket.on("CH1", (args) => {
-            console.log(args.type);
+            console.log(args.type +" "+args.msg);
             if (args.type === "play")
                 setPlayVid(true);            
             else if (args.type === "pause")
                 setPlayVid(false); 
+            else if (args.type === "new user")
+                setORMs(args.msg); 
         });
     }
 
@@ -111,14 +116,21 @@ function App() {
 
     function playPause(event) {
         if (typeof event != "undefined" && event.type === "pause") {
-                console.log("pause event emitted");
-                socket.emit("CH0", { type: "pause" });
-                setPlayVid(false);
+            console.log("pause event emitted");
+            socket.emit("CH0", { type: "pause" });
+            setPlayVid(false);
         } else {
-                console.log("play event emitted");
-                socket.emit("CH0", { type: "play"});
-                setPlayVid(true);
+            console.log("play event emitted");
+            socket.emit("CH0", { type: "play"});
+            setPlayVid(true);
         }
+    }
+
+    const displayMembers = () => { return otherRoomMembers; }
+    const displayMyInfo = () => {
+        const t = (type === "pub") ? "Host" : "Guest";
+        const info = "You are " + uName + ". " + t + " in room: " + room;
+        return info;
     }
 
     function handleChangeURL(event)  { setVideoURL(global.URL.createObjectURL(event.target.files[0])); }
@@ -127,7 +139,7 @@ function App() {
 
     return (
     <>
-        <ConnectionSideMenu con={connectPublisher}  r={room} chURL={handleChangeURL} copyURL={copyURLf} />
+        <ConnectionSideMenu con={connectPublisher}  r={room} chURL={handleChangeURL} copyURL={copyURLf} displayMembers={displayMembers} displayMyInfo={displayMyInfo} />
 
         <div className={"vidWrapper"}>
             <div className={"vidContainer"}>

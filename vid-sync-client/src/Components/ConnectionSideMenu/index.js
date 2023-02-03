@@ -1,5 +1,5 @@
 import React, {useState, useRef} from 'react';
-import {Container, Wrapper, Btn, ContainerInner, Horizontal,Icon, ChatContainer, SelVidIcon } from './elements';
+import {Container, Wrapper, Btn, ContainerInner, Horizontal,Icon, ChatContainer, SelVidIcon, MsgBox, MsgInputWrapper, MsgInput, MsgSendButton } from './elements';
 import { FaBars, FaUsers, FaLink, FaUserAlt, FaFileVideo } from "react-icons/fa";
 
 export const ConnectionSideMenu = (props) => {
@@ -7,24 +7,23 @@ export const ConnectionSideMenu = (props) => {
     const inputFile = useRef(null);
     const sidebarClass = sidebarOpen ? "sidebar open" : "sidebar";
     const sidebarInnerClass = sidebarOpen ? "sidebarInner open" : "sidebarInner";
+    const [info, setInfo] = useState("");
 
-    const handleViewSidebar = (props) => {
-        setSideBarOpen(!sidebarOpen);
-    };
+    function a() {setInfo(props.displayMembers)}
+    function b() {setInfo(props.displayMyInfo)}
 
-    const selectMovie = () => {
-        inputFile.current.click();
-    };
+    const handleViewSidebar = (props) => { setSideBarOpen(!sidebarOpen); };
+    const selectMovie = () => { inputFile.current.click(); };
 
     return (
         <>
             <Wrapper className={sidebarClass}>
                 <Container>
                     <Horizontal className={"openCloseBar"}>
-                        <Icon className={"trigger"} onClick={handleViewSidebar}><FaBars></FaBars></Icon>
+                        <Icon onClick={handleViewSidebar}><FaBars className={"FaBars"}></FaBars></Icon>
                         <Icon className={sidebarInnerClass}><FaLink onClick={props.copyURL}></FaLink></Icon>
-                        <Icon className={sidebarInnerClass}><FaUsers></FaUsers></Icon>
-                        <Icon className={sidebarInnerClass}><FaUserAlt></FaUserAlt></Icon>
+                        <Icon className={sidebarInnerClass}><FaUsers onClick={a}></FaUsers></Icon>
+                        <Icon className={sidebarInnerClass}><FaUserAlt onClick={b}></FaUserAlt></Icon>
                     </Horizontal>
                     <ContainerInner className={sidebarInnerClass} >
                         <Horizontal className={"startBar"}>
@@ -33,7 +32,15 @@ export const ConnectionSideMenu = (props) => {
                             <input type='file' id='file' ref={inputFile} style={{display: 'none'}} onChange={props.chURL}/>
                         </Horizontal>
                     </ContainerInner>
-                    <ChatContainer className={sidebarInnerClass}></ChatContainer>
+                    <ChatContainer className={sidebarInnerClass}>
+                        <MsgBox>
+                            {info}
+                        </MsgBox>
+                        <MsgInputWrapper>
+                            <MsgInput></MsgInput>
+                            <MsgSendButton>Send</MsgSendButton>
+                        </MsgInputWrapper>
+                    </ChatContainer>
                 </Container>
             </Wrapper>
         </>

@@ -15,7 +15,7 @@ const io = require("socket.io")(server, {
 
 let usernames = ["BigHoss","bigfootisreal", "SaintBroseph", "FrostedCupcake", "kim_chi", "Babushka"];
 const mainRoom = "Main";
-const roomsToUsers = new InMemoryDatabase();    // Map of rooms to usernames: roomID --> "uName1, uName2, ..."
+const roomsToUsers = new InMemoryDatabase();    // Map of rooms to usernames: roomID --> "sid:uname1, ... ,sid:uname2"
 const usersToRooms = new InMemoryDatabase();    // Map of users to rooms: socket.id --> roomID
 const socketToType = new InMemoryDatabase();    // Map of socketID to user Type: socket.id --> "pub"/"sub"
 
@@ -26,28 +26,34 @@ io.on("connection", (socket) => {
     let roomID = genRoomID();
     let username = usernames[0];
     
+    // if a pub is trying to connect but it already exists in the server then delete the previous details.
     roomsToUsers.set(roomID, socket.id+":"+username);
     socketToType.set(socket.id, "pub");
     socket.emit(mainRoom, {
       username: username,
       roomID: roomID,
     });
-    goToRoom(socket, roomID);
+    socket.join(roomID);
+    socket.emit(roomID, {
+      text: "Success",
+    });
+    usersToRooms.set(socket.id, roomID);    
     console.log("Socket: "+socket.id+" connected to this server as PUB and has name: "+username+" and roomID: "+roomID);
   } else {
     let room = socket.handshake.headers.roomid;
-    if (!roomsToUsers.has(room) || roomSize(room) > 6) {
+    if (!roomsToUsers.has(room) || roomSize(room) >= 6) {
         console.log("Room does not exist or is full");
         socket.emit(room, "Room does not exist or is full");
     } else if (roomsToUsers.has(room) && roomSize(room) < 6){
-        socket.join(room);
         let username = genUsername(room);
+        socket.join(room);
         roomsToUsers.set(room, roomsToUsers.get(room)+","+socket.id+":"+username);
         socketToType.set(socket.id, "sub");
         socket.emit(room, {
           username: username,
         });
         usersToRooms.set(socket.id, room);
+        io.to(room).emit("CH1", {type:"new user", msg: roomsToUsers.get(room)});
         console.log("Socket: "+socket.id+" connected to this server as SUB and has name: "+username+" and roomID: "+room);
       }
    }
@@ -77,20 +83,13 @@ io.on("connection", (socket) => {
           }
         }
       roomsToUsers.set(room, roomsToUsers.get(room).split(",").filter(e => !e.includes(socket.id)));
+      io.to(room).emit("CH1", {type:"new user", msg: roomsToUsers.get(room)});
     }
     usersToRooms.delete(socket.id);
     console.log(roomsToUsers);
     console.log(usersToRooms);
   });
 });
-
-const goToRoom = (socket, roomID) => {
-  socket.join(roomID);
-  socket.emit(roomID, {
-    text: "Success",
-  });
-  usersToRooms.set(socket.id, roomID);
-}
 
 const genUsername = (room) => {
   let uL = roomsToUsers.get(room);
@@ -101,11 +100,10 @@ const genUsername = (room) => {
   }
 };
 
-const genRoomID = () => {
-  let roomID = Date.now().toString(36) + Math.random().toString(36);
-  return roomID;
-};
+const genRoomID = () => { return Date.now().toString(36) + Math.random().toString(36); };
 
+// The size is of the number of users in a room. 
+// Counts the number of keys given a roomID.
 const roomSize = (room) => {
   let size = 0;
   for (const u of usersToRooms.keys()) {
@@ -113,7 +111,6 @@ const roomSize = (room) => {
       size++;
     }
   }
-  // return roomsToUsers.get(room).split(",").length
   return size;
 }
 
