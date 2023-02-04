@@ -82,14 +82,20 @@ io.on("connection", (socket) => {
             }
           }
         }
-      roomsToUsers.set(room, roomsToUsers.get(room).split(",").filter(e => !e.includes(socket.id)));
-      io.to(room).emit("CH1", {type:"new user", msg: roomsToUsers.get(room)});
+      console.log("about to delete from this list: " + roomsToUsers.get(room));
+      removeUserFromRoom(room, socket.id);
+      io.to(room).emit("CH1", {type:"usersupdate", msg: roomsToUsers.get(room)});
     }
     usersToRooms.delete(socket.id);
     console.log(roomsToUsers);
     console.log(usersToRooms);
   });
 });
+
+
+const removeUserFromRoom = (room, sid) => {
+  roomsToUsers.set(room, roomsToUsers.get(room).toString().split(",").filter(e => !e.includes(sid)));
+}
 
 const genUsername = (room) => {
   let uL = roomsToUsers.get(room);

@@ -62,7 +62,7 @@ function App() {
                     else if (args.type === "pause") {
                         setPlayVid(false);
                     }    
-                    else if (args.type === "new user")
+                    else if (args.type === "usersupdate")
                     setORMs(args.msg); 
                 });
                 socket.on("Admin", (args) => {
@@ -94,7 +94,7 @@ function App() {
                 setPlayVid(true);            
             else if (args.type === "pause")
                 setPlayVid(false); 
-            else if (args.type === "new user")
+            else if (args.type === "usersupdate")
                 setORMs(args.msg); 
         });
     }

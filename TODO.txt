@@ -1,12 +1,12 @@
 Logic to implement :
-
-    [X]  If current user is pub and socket is connected, user cannot create another party unless they are sub.
-    [X]  A user can only be connected once, no matter how many browser tabs they have open. Can be identified via their authentication token.
-    [X]  Must work in a clustered environment. Individual server nodes should be able to go down without affecting the rest of the system.
-    [X]  Authorization tokens should be passed via a dedicated authentication event after the connection is established.
+    [X]     If current user is pub and socket is connected, user cannot create another party unless they are sub.
+    [X]     Add group chat feature.
+    [X]     Add voice chat feature.
+    [X]     A user can only be connected once, no matter how many browser tabs they have open. Can be identified via their authentication token.
+    [X]     Must work in a clustered environment. Individual server nodes should be able to go down without affecting the rest of the system.
+    [X]     Authorization tokens should be passed via a dedicated authentication event after the connection is established.
 
 Server :
-
 
 Client :
     [X]  Fix the FaBars padding on collapsed sidebar.
