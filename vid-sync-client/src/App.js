@@ -35,7 +35,22 @@ function App() {
         []
     );
 
-    // Friend sends pubRoomID via msg and this client get put in that room.
+    const connectPublisher = () => {
+        socket = io(wsServerURL, {
+            extraHeaders: {
+                type: type
+            }
+        });
+        socket.on("Main", (args) => {
+            uName = args.username;
+            room = args.roomID;
+            copyURL += room;
+            console.log(uName," connected to room ", room, " as ", type);
+        });
+        startListeningForEvents(socket);
+    }
+
+    // Friend sends pubRoomID via msg and this client gets put in that room.
     function connectSubscriber(pubRoomID) {
         console.log("connecting subscriber");
         socket = io(wsServerURL, {
@@ -52,66 +67,44 @@ function App() {
                 uName = args.username;
                 type = "sub";
                 console.log(uName," connected to room ", room, " as ", type);
-                socket.on("CH1", (args) => {
-                    console.log(args.type);
-                    if (args.type === "seekTime")
-                        seekTime = Math.floor(args.time);
-                    else if (args.type === "play") {
-                        setPlayVid(true);
-                    }
-                    else if (args.type === "pause") {
-                        setPlayVid(false);
-                    }    
-                    else if (args.type === "usersupdate")
-                    setORMs(args.msg); 
-                });
-                socket.on("Admin", (args) => {
-                    console.log(args);
-                    if(args.type === "pub")
-                        type = "pub";
-                });
+                startListeningForEvents(socket);
             }
         });
     }
 
-    // Connect to server and get username, and roomID, then go to my own room
-    const connectPublisher = () => {
-        socket = io(wsServerURL, {
-            extraHeaders: {
-                type: type
-            }
-        });
-        socket.on("Main", (args) => {
-            uName = args.username;
-            room = args.roomID;
-            copyURL += room;
-            console.log(uName," connected to room ", room, " as ", type);
-        });
-
+    const startListeningForEvents = (socket) => {
         socket.on("CH1", (args) => {
-            console.log(args.type +" "+args.msg);
-            if (args.type === "play")
-                setPlayVid(true);            
-            else if (args.type === "pause")
-                setPlayVid(false); 
+            console.log(args.type);
+            if (args.type === "seekTime")
+                seekTime = Math.floor(args.time);
+            else if (args.type === "play") {
+                setPlayVid(true);
+            }
+            else if (args.type === "pause") {
+                setPlayVid(false);
+            }    
             else if (args.type === "usersupdate")
-                setORMs(args.msg); 
+            setORMs(args.msg); 
+        });
+        socket.on("Admin", (args) => {
+            console.log(args);
+            if(args.type === "pub")
+                type = "pub";
         });
     }
 
     function onProgress(event) {
-        if (type === "sub" && seekCycle === 0) {
-            const currTime = Math.floor(event.playedSeconds);
-            if (Math.abs(currTime-seekTime) > 1)
-                vidControl.seekTo(seekTime);
-            seekCycle = 5;
+        if (type === "sub") {
+            seekCycle--;
+            if (seekCycle === 0) {
+                const currTime = Math.floor(event.playedSeconds);
+                if (Math.abs(currTime-seekTime) > 1)
+                    vidControl.seekTo(seekTime);
+                seekCycle = 5;
+            }
         }
-        else if (type === "pub" && socket.connected) {
-            socket.emit("CH0", {type:"seekTime",time:event.playedSeconds});
-        } 
-        
-        if (type === "sub")
-        seekCycle--;
+        else if (type === "pub" && socket.connected)
+            socket.emit("CH0", {type:"seekTime",time:event.playedSeconds});      
     }
 
     function playPause(event) {
