@@ -6,7 +6,7 @@ import { ConnectionSideMenu } from './Components/ConnectionSideMenu';
 import './App.css';
 
 const wsServerURL = "ws://localhost:8080";
-const baseClientURL = "http://localhost:3000/?r=";
+const baseClientURL = "http://127.0.0.1:4200/?r=";
 let copyURL = baseClientURL;
 let socket = "";
 let type = "pub";
@@ -15,6 +15,7 @@ let room = "";
 let vidControl = "";
 let seekTime = 0;
 let seekCycle = 0;
+let chatStr = " ";
 
 function App() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -22,6 +23,9 @@ function App() {
     const [playVid, setPlayVid] = useState(true);
     const urlParam = searchParams.get("r")
     const [otherRoomMembers, setORMs] = useState("");
+    const [message, setMessage] = useState('');
+    const [chat, setChat] = useState("");
+
 
     useEffect(
         () => {
@@ -48,6 +52,9 @@ function App() {
             console.log(uName," connected to room ", room, " as ", type);
         });
         startListeningForEvents(socket);
+        socket.on('disconnect', (reason) => {
+            console.log(`Disconnected: ${reason}`);
+        });
     }
 
     // Friend sends pubRoomID via msg and this client gets put in that room.
@@ -70,6 +77,14 @@ function App() {
                 startListeningForEvents(socket);
             }
         });
+        socket.on('disconnect', (reason) => {
+            console.log(`Disconnected: ${reason}`);
+        });
+    }
+
+    const disconnect = () => {
+        if (socket.connected)
+            socket.disconnect();
     }
 
     const startListeningForEvents = (socket) => {
@@ -77,19 +92,20 @@ function App() {
             console.log(args.type);
             if (args.type === "seekTime")
                 seekTime = Math.floor(args.time);
-            else if (args.type === "play") {
+            else if (args.type === "play")
                 setPlayVid(true);
-            }
-            else if (args.type === "pause") {
-                setPlayVid(false);
-            }    
+            else if (args.type === "pause")
+                setPlayVid(false); 
             else if (args.type === "usersupdate")
-            setORMs(args.msg); 
-        });
-        socket.on("Admin", (args) => {
-            console.log(args);
-            if(args.type === "pub")
-                type = "pub";
+                setORMs(args.msg); 
+            else if (args.type === "chat") {
+                chatStr+="\n\n"+args.message;
+                setChat(chatStr);
+                // console.log(args.message);
+                // console.log(chatStr);
+            }
+            else if (args.type === "pub") 
+                type = "pub";                        
         });
     }
 
@@ -124,15 +140,21 @@ function App() {
         const t = (type === "pub") ? "Host" : "Guest";
         const info = "You are " + uName + ". " + t + " in room: " + room;
         return info;
+
     }
 
+    const handleMsgSend = () => {
+        if (message.toString())
+            socket.emit("CH0", {type:"chat", senderName:uName, senderID:socket.id, message:message}); 
+    }
+    const handleMsgInput = (event) => { setMessage(event.target.value); }
     function handleChangeURL(event)  { setVideoURL(global.URL.createObjectURL(event.target.files[0])); }
     function ref(p) { vidControl = p; }
     function copyURLf() { navigator.clipboard.writeText(copyURL); }
 
     return (
     <>
-        <ConnectionSideMenu con={connectPublisher}  r={room} chURL={handleChangeURL} copyURL={copyURLf} displayMembers={displayMembers} displayMyInfo={displayMyInfo} />
+        <ConnectionSideMenu chat={chat} sendMsg={handleMsgSend} handleMsgInput={handleMsgInput} con={connectPublisher} disc={disconnect} r={room} chURL={handleChangeURL} copyURL={copyURLf} displayMembers={displayMembers} displayMyInfo={displayMyInfo} />
 
         <div className={"vidWrapper"}>
             <div className={"vidContainer"}>

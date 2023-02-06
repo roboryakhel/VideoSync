@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: 'http://127.0.0.1:4200',
     methods: ["GET", "POST"],
     allowedHeaders: ["type", "roomID"],
     credentials: true,
@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
           for (const u of usersToRooms.keys()) {
             if (usersToRooms.get(u) === room  && u != socket.id) {
               console.log(u + " will be the new pub");
-              socket.broadcast.to(u).emit( 'Admin', {type:"pub",msg:"you are the new pub!"} );
+              socket.broadcast.to(u).emit("CH1", {type:"pub",msg:"you are the new pub!"} );
               break;
             }
           }
