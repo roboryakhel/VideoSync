@@ -9,7 +9,7 @@ Server :
 
 Client :
     [X]     Fix the FaBars padding on collapsed sidebar.
-    [X]     Add CSS transition for the sidebar content. Icons, buttons, etc.
+    [X]     Add CSS transition for the sidebar content. Icons, buttons, etc. When the sidebar opens, the inner content should ease in view. 
     [X]     When a subscriber disconnects, refresh the page.
  
 Done :
