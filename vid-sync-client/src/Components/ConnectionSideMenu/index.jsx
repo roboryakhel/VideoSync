@@ -16,8 +16,10 @@ export const ConnectionSideMenu = (props) => {
     const handleSendMessage = (e) => {
         e.preventDefault();
         if (message.trim()) {
-            props.socket.emit('CH0', {
+            props.socket.emit('CHAT-S', {
                 text: message,
+                // name: localStorage.getItem('userName'), // Store uName only when client runs in prod. Don't use this for dev or testing
+                name : props.name,
                 id: `${props.socket.id}${Math.random()}`,
                 socketID: props.socket.id
           });
@@ -60,10 +62,9 @@ export const ConnectionSideMenu = (props) => {
                     </ContainerInner>
                     <ChatContainer >
                         <MsgBox className={sidebarInnerClass}>
-                            {info}
                             {props.messages.map(message => {
                                 return ( 
-                                     <MessageBox key={message.id} msgTxt={message.text} /> 
+                                     <MessageBox name={props.name} bName={message.name} key={message.id} msgTxt={message.text} /> 
                                 );
                             })}                        
                         </MsgBox>

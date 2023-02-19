@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
           username: username,
         });
         usersToRooms.set(socket.id, room);
-        io.to(room).emit("CH1", {type:"new user", msg: roomsToUsers.get(room)});
+        io.to(room).emit('MEMS-C', {msg: roomsToUsers.get(room)});
         console.log("Socket: "+socket.id+" connected to this server as SUB and has name: "+username+" and roomID: "+room);
       }
    }
@@ -61,8 +61,19 @@ io.on("connection", (socket) => {
   console.log(roomsToUsers);
   console.log(usersToRooms);
 
-  socket.on("CH0", (message) => {  
-    io.to(usersToRooms.get(socket.id)).emit("CH1", message);
+ 
+  socket.on('VC-S', (message) => {  
+    io.to(usersToRooms.get(socket.id)).emit('VC-C', message);
+    console.log (message);
+  });
+
+  socket.on('PGT-S', (message) => {  
+    io.to(usersToRooms.get(socket.id)).emit('PGT-C', message);
+    console.log (message);
+  });
+
+  socket.on('CHAT-S', (message) => {  
+    io.to(usersToRooms.get(socket.id)).emit('CHAT-C', message);
     console.log (message);
   });
 
@@ -77,14 +88,14 @@ io.on("connection", (socket) => {
           for (const u of usersToRooms.keys()) {
             if (usersToRooms.get(u) === room  && u != socket.id) {
               console.log(u + " will be the new pub");
-              socket.broadcast.to(u).emit("CH1", {type:"pub",msg:"you are the new pub!"} );
+              socket.broadcast.to(u).emit('PUBH-C', {type:"pub",msg:"you are the new pub!"} );
               break;
             }
           }
         }
       console.log("about to delete from this list: " + roomsToUsers.get(room));
       removeUserFromRoom(room, socket.id);
-      io.to(room).emit("CH1", {type:"usersupdate", msg: roomsToUsers.get(room)});
+      io.to(room).emit('MEMS-C', {msg: roomsToUsers.get(room)});
     }
     usersToRooms.delete(socket.id);
     console.log(roomsToUsers);

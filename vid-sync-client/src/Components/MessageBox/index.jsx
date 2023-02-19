@@ -6,40 +6,32 @@ export const MessageBox = (props) => {
 
 
     return (
-        <>
-            <article className={"msg-container msg-self"} id={"msg-0"}>
-                <div className={"msg-box"}>
+        props.name === props.bName ? 
+        (<article className={"msg-container"}>
+            <div className={"msg-inner"}>
+                <div className={"msg-box msg-self"}>
                     <div className={"flr"}>
                         <div className={"messages"}>
-                            <p className={"msg"} id={"msg-1"}> {props.msgTxt}</p>
+                            <p className={"msg"}> {props.msgTxt}</p>
                         </div>
-                        <span className={"timestamp"}><span className={"username"}>{props.name}</span>&bull;<span className={"posttime"}>{props.time}</span></span>
                     </div>
-                    <img className={"user-img"} id={"user-0"} src={alien} />
+                    <img className={"user-img"} src={alien} />
                 </div>
-            </article>
-        </>
+            </div>
+        </article>)
+    :
+        (<article className={"msg-container"} >
+        <div className={"msg-inner"}>
+            <div className={"msg-box msg-other"}>
+                <div className={"flr"}>
+                    <span className={"timestamp"}><span className={"username"}>{props.bName}</span></span>
+                    <div className={"messages"}>
+                        <p className={"msg"}> {props.msgTxt}</p>
+                    </div>
+                </div>
+                <img className={"user-img"} src={alien} />
+            </div>
+        </div>
+    </article>)
     );
 }
-
-
-
-// Use the below later for better message display
-
-// {messages.map((message) =>
-//     message.name === localStorage.getItem('userName') ? (
-//       <div className="message__chats" key={message.id}>
-//         <p className="sender__name">You</p>
-//         <div className="message__sender">
-//           <p>{message.text}</p>
-//         </div>
-//       </div>
-//     ) : (
-//       <div className="message__chats" key={message.id}>
-//         <p>{message.name}</p>
-//         <div className="message__recipient">
-//           <p>{message.text}</p>
-//         </div>
-//       </div>
-//     )
-//   )}
