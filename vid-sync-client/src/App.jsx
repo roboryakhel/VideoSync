@@ -7,7 +7,7 @@ import { io } from "socket.io-client";
 import { ConnectionSideMenu } from './Components/ConnectionSideMenu';
 import './App.css';
 
-const wsServerURL = "ws://localhost:8080";
+const wsServerURL = "ws://35.183.113.241:8080";
 const baseClientURL = "http://127.0.0.1:4200/?r=";
 let copyURL = baseClientURL;
 let socket = {};
@@ -110,17 +110,26 @@ function App() {
         console.log("connecting Pub");
         socket = io(wsServerURL, {
             extraHeaders: {
-                type: type
+                type: type,
+                uid: localStorage.getItem('pubID') === null ? "0" : localStorage.getItem('pubID')
             }
         });
-        connected = true;
-      socket.on("Main", (args) => {
-            uName = args.username;
-            // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
-            room = args.roomID;
-            copyURL += room;
-            console.log(uName," connected to room ", room, " as ", type);
-            forceUpdate();
+        socket.on('CONN-STATUS', (args) => {
+            if (args.code === 0) {
+                socket.on("Main", (args) => {
+                    uName = args.username;
+                    // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
+                    room = args.roomID;
+                    copyURL += room;
+                    console.log(uName," connected to room ", room, " as ", type);
+                    localStorage.setItem('pubID', args.pubID);
+                    connected = true;
+                    forceUpdate();
+                });
+            } else if (args.code == 1) {
+                console.log(args);
+                socket.off('CONN_STATUS');
+            }
         });
     }
 
@@ -129,21 +138,29 @@ function App() {
         socket = io(wsServerURL, {
             extraHeaders: {
             type: "sub",
-            roomID: pubRoomID
+            roomID: pubRoomID,
+            uid: localStorage.getItem('subID') === null ? "0" : localStorage.getItem('subID')
             }
         });
-        socket.on(pubRoomID, (args) => {
-            if (args === "Room does not exist") {
-                console.log("Could not connect to servers");
-            }
-            else {
-                uName = args.username;
-                // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
-                type = "sub";
-                console.log(uName," connected to room ", room, " as ", type);
-                connected = true;
-                listenPubChange(socket);
-                forceUpdate();
+
+        socket.on('CONN-STATUS', (args) => {
+            if (args.code === 0) {
+                socket.on(pubRoomID, (args) => {
+                    uName = args.username;
+                    // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
+                    type = "sub";
+                    console.log(uName," connected to room ", room, " as ", type);
+                    localStorage.setItem('subID', args.subID);
+                    connected = true;
+                    listenPubChange(socket);
+                    forceUpdate();
+                });
+            } else if (args.code === 1) {
+                if (args.msg === "RDNE") {
+                    console.log("Could not connect to servers. Room does not exist");
+                }
+                console.log(args);
+                socket.off('CONN_STATUS');
             }
         });
     }

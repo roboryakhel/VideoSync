@@ -1,9 +1,7 @@
-import React, {useState, useRef} from 'react';
+import React from 'react';
 import alien from "../../Pictures/alien.png"
 
-
 export const MessageBox = (props) => {
-
 
     return (
         props.name === props.bName ? 
