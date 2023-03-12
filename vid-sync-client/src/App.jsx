@@ -1,13 +1,20 @@
 window.global ||= window;
 
+import { HideOnMouseStop } from 'react-hide-on-mouse-stop';
 import React, {useState, useEffect} from 'react';
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Collapse from '@mui/material/Collapse';
 import { useSearchParams} from "react-router-dom";
 import ReactPlayer from 'react-player';
 import { io } from "socket.io-client";
 import { ConnectionSideMenu } from './Components/ConnectionSideMenu';
+import { LandingPage } from './Components/LandingPage';
 import './App.css';
 
-const wsServerURL = "ws://35.183.113.241:8080";
+// const wsServerURL = "wss://35.183.113.241:8080";
+const wsServerURL = "wss://127.0.0.1:8080";
 const baseClientURL = "http://127.0.0.1:4200/?r=";
 let copyURL = baseClientURL;
 let socket = {};
@@ -18,21 +25,25 @@ let vidControl = "";
 let seekCycle = 0;
 let connected = false;
 
-
 function App() {
     const [searchParams, setSearchParams] = useSearchParams();
     const urlParam = searchParams.get("r");
     const [videoURL, setVideoURL] = useState("");
     const [playVid, setPlayVid] = useState(true);
     const [otherRoomMembers, setORMs] = useState("");
+    const [myData, setMyData] = useState("myData")
     const [messages, setMessages] = useState([]);
     const [sock, setSock] = useState('Sock');
     const [seekTime, setSeekTime] = useState(0);
+    const [toggle, setToggle] = useState(false);
+    const [status, setStatus] = useState("Status: Not Connected");
+    const [alertType, setAlertType] = useState("error");
     // The below is a function which when called force updates the state. IDK how it works. Don't touch it.
     const [userName, setUname] = useState("Name");
+    const [sidebarClicked, setSBClicked] = useState(false);
     const [, updateState] = React.useState();
+    const [sidebarVisible, setSidebarVisible] = useState("{opacity:0;}")
     const forceUpdate = React.useCallback(() => updateState({}), []);
-
 
     useEffect(
         () => {
@@ -74,7 +85,7 @@ function App() {
         () => {
             console.log("New members useEffect");
             if (connected) {
-                socket.on('MEMS-C', (args) => {setORMs([...otherRoomMembers, args])});
+                socket.on('MEMS-C', (args) => {setORMs([...otherRoomMembers, args.msg])});
                 return () => { socket.off('MEMS-C'); };
             }
         },[socket,otherRoomMembers]
@@ -93,8 +104,13 @@ function App() {
     useEffect( 
         () => {
             console.log("Setting Socket useEffect");
-            if (connected)
+            if (connected) {
                 setSock(socket);
+                setMyData("Name: " +uName+" type: "+type+" room: "+room);
+                setToggle(true);
+                setAlertType("success");
+                setStatus(myData);
+            }
         },[socket, sock, connected]
     );
 
@@ -197,16 +213,47 @@ function App() {
 
     return (
         <>
-            <ConnectionSideMenu name={userName} socket={sock} messages={messages} con={connectPublisher} r={room} chURL={handleChangeURL} copyURL={copyURLf} displayMembers={otherRoomMembers}/>
+            <LandingPage type={type}></LandingPage>
+            <div className="arrows-wrapper">
+                <div className="arrow arrow-first"></div>
+                <div className="arrow arrow-second"></div>
+                <div className="arrow arrow-third"></div>
+            </div>
+
+            <div className={"alerts-wrapper-main"}>
+                <Collapse in={toggle}>
+                    <Alert severity={alertType}
+                        action={
+                            <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                                setToggle(false);
+                            }}
+                            >
+                            <CloseIcon fontSize="inherit" />
+                            </IconButton>                         
+                            }
+                            sx={{ mb: 2 }}
+                            >
+     
+                        <br />
+                        {status}
+                    </Alert>
+                </Collapse>
+            </div>
+
+            <HideOnMouseStop delay={1000} defaultTransition hideCursor>
+                <ConnectionSideMenu visible={sidebarVisible} myData={myData} membersData={otherRoomMembers} name={userName} socket={sock} messages={messages} con={connectPublisher} chURL={handleChangeURL} copyURL={copyURLf} />
+            </HideOnMouseStop>
 
             <div className={"vidWrapper"}>
                 <div className={"vidContainer"}>
-                    <div>
-                        <ReactPlayer ref={ref} url={videoURL} playing={playVid} className="react-player" controls width="100%" height="100%" onProgress={onProgress} onPause={playPause} onPlay={playPause}/>
-                    </div>
+                    <ReactPlayer ref={ref} url={videoURL} playing={playVid} className="react-player" controls width="100%" height="100%" onProgress={onProgress} onPause={playPause} onPlay={playPause}/>
                 </div>
             </div>
-            
+
         </>
     );
 }

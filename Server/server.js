@@ -1,16 +1,23 @@
-const http = require('http');
+const https = require('https');
 const express = require('express');
 const { InMemoryDatabase } = require('in-memory-database');
 const app = express();
-const server = http.createServer(app);
-const io = require("socket.io")(server, {
+const path = require('path');
+const fs = require('fs');
+
+const sslServer = https.createServer({
+  key:fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+  cert:fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+  },app);
+  
+const io = require("socket.io")(sslServer, {
   cors: {
     origin: 'http://127.0.0.1:4200',
     methods: ["GET", "POST"],
     allowedHeaders: ["type", "roomID","uid"],
     credentials: true,
   },
-});
+  });
 
 let usernames = ["BigHoss","bigfootisreal", "SaintBroseph", "FrostedCupcake", "kim_chi", "Babushka"];
 const mainRoom = "Main";
@@ -67,7 +74,7 @@ io.on("connection", (socket) => {
         });
         usersToRooms.set(socket.id, room);
         activeSessions.set(userID,socket.id);   
-        io.to(room).emit('MEMS-C', {msg: roomsToUsers.get(room)});
+        io.to(room).emit('MEMS-C', {msg: getUsersInRoom(room)});
         console.log("Socket: "+socket.id+" connected to this server as SUB and has name: "+username+" and roomID: "+room);
       }
    }
@@ -109,7 +116,7 @@ io.on("connection", (socket) => {
         }
       console.log("about to delete from this list: " + roomsToUsers.get(room));
       removeUserFromRoom(room, socket.id);
-      io.to(room).emit('MEMS-C', {msg: roomsToUsers.get(room)});
+      io.to(room).emit('MEMS-C', {msg: getUsersInRoom(room)});
     }
     let delSession="";
     for (const a of activeSessions.keys()) {
@@ -151,4 +158,12 @@ const roomSize = (room) => {
   return size;
 }
 
-server.listen(process.env.PORT || 8080, () => console.log("Server is running"));
+const getUsersInRoom = ( room) => {
+  let arr="";
+  let ARR = roomsToUsers.get(room).toString().split(",");
+  for (const u of ARR)
+    arr += ","+u.split(":")[1];
+  
+  return arr;
+}
+sslServer.listen(process.env.PORT || 8080, () => console.log("Server is running"));

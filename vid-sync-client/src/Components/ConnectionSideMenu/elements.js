@@ -12,8 +12,14 @@ export const Container = styled.div`
     margin:auto;
 `;
 
+export const Horizontal = styled.div`
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+`;
+
 export const ContainerInner = styled.div`
-    margin-top:50px;
     margin:auto;
     width:300px;
 `;
@@ -23,12 +29,6 @@ export const Btn = styled.button`
     display:block;
 `;
 
-export const Horizontal = styled.div`
-    display:flex;
-    flex-direction:row;
-    justify-content:space-between;
-    align-items:center;
-`;
 
 export const Icon = styled.div`
     font-size: 18px;
@@ -44,47 +44,32 @@ export const SelVidIcon = styled.div`
 
 export const ChatContainer = styled.div`
     width:100%;
-    height:50%;
+    height:100%;
     margin:auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
+    // box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
 `;
 
 
 export const MsgBox = styled.div`
-    // height: 90%;
     width:100%;
-    // overflow:scroll;
-    background-color: #E7F6F2;
-    // margin:auto;
     flex: auto;
     max-height: calc(100% - 60px);
     background: #2f323b;
     overflow: auto;
-}
 `;
 
-export const MsgInputWrapper = styled.div`
-    // display: flex;
-    // flex-direction: row;
-    // justify-content: space-between;
-    // align-item: center; 
-    // margin:auto;
-    // width:85%;
-    // height:5%;
+export const MsgInputWrapper = styled.form`
     flex: 0 0 auto;
     height: 60px;
     background: #40434e;
-    border-top: 1px solid #2671ff;
-    box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
+    border-top: 1px solid #fff;
 `;
 
 export const MsgInput = styled.input`
-    // width : 80%;
-    // border-bottom-left-radius: 8px;
-    line-height: 60px;
+line-height: 60px;
     outline: 0 none;
     border: none;
     width: calc(100% - 60px);
@@ -105,5 +90,4 @@ export const MsgSendButton = styled.button`
     padding: 2px 0 0 0;
     margin: 10px;
     transition: all 0.15s ease-in-out;
-
 `;

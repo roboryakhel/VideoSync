@@ -39,3 +39,7 @@ testem.log
 Thumbs.db
 node_modules
 dist
+
+# VSPK
+../Server/cert
+../Server/VSKP.pem
