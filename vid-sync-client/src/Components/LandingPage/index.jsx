@@ -1,45 +1,84 @@
+import { Icon } from '@mui/material';
 import React, {useState, useRef, useEffect} from 'react';
+import video from '../../Videos/LPBG_0.mp4'
+import logo from '../../Pictures/WP_LOGO_3.png'
 
 export const LandingPage = (props) => {
-
-
 
     return (
         <>
             <div className="full">
-                <div className="lp-inner">
-                    <div className="lp-intro">
-                        <div>
-                            <p className="title">Watch Party</p>
-                            <p className="desc">A Tool that Synchronizes Videos Playing on Your Device With the Same Videos Playing on Your Friends Device.</p>
-                            <p>Simply choose a video you and your friends want to watch and play the video without any manual coordination.</p>
-                            <p>All party members can control the vide (pause/play/ffwd etc) and all action are synchronized!</p>
+                <div className='full-inner'>
+                    <video autoPlay loop muted src={video} type="video/mp4" className="bg-video"></video>
+
+                    <div className="lp-inner">
+                        <div className="lp-intro">
+                            <div>
+                                {/* <p className="title">Watch Party!</p> */}
+                                <div className='logo-wrapper'>
+                                    <img className="logo-img" src={logo}/>                            
+                                </div>
+                                <p className="desc">A Tool that Synchronizes Videos Playing on Your Device With Videos Playing on Your Friends Device.</p>
+                                {/* <p>Simply choose a video you and your friends want to watch and play the video without any manual coordination.<br/>
+                                All party members can control the video (pause/play/ffwd etc) and all actions are synchronized!</p> */}
+                                
+                            </div>
+                        </div>
+                        {props.type === "sub" ? 
+                            <div className="lp-steps sub">
                             
-                        </div>
+                                <div className="inst-step step1">
+                                <Icon class="material-symbols-outlined">menu</Icon>
+                                    <hr className='inst-step-hr'></hr>
+                                    <p className='title'>Step 1</p>
+                                    <p className='desc'>Expand the SideBar and Start a Party</p>
+                                    <p className='small'>Follow the Arrows and Expand the SideBar 
+                                        Press the Button to Start a Party</p>
+                                </div>
+            
+                                <div className="inst-step step3">
+                                <Icon class="material-symbols-outlined">play_circle</Icon>
+                                    <hr className='inst-step-hr'></hr>
+                                    <p className='title'>Step 2</p>
+                                    <p className='desc'>Select a Video and Play</p>
+                                    <p className='small'>Click the camera icon to select a video 
+                                        Ensure the video is downloaded on each of your friends devices.</p>
+                                </div>                
+                            </div>
+                        :
+                        <div className="lp-steps pub">
+                            
+                            <div className="inst-step step1">
+                                <Icon class="material-symbols-outlined">menu</Icon>
+                                <hr className='inst-step-hr'></hr>
+                                <p className='title'>Step 1</p>
+                                <p className='desc'>Expand the SideBar and Start a Party</p>
+                                <p className='small'>Follow the Arrows and Expand the SideBar 
+                                Press the Button to Start a Party</p>
+                            </div>
+
+                            <div className="inst-step step2">
+                                <Icon class="material-symbols-outlined">link</Icon>
+                                <hr className='inst-step-hr'></hr>
+                                <p className='title'>Step 2</p>
+                                <p className='desc'>Copy and Share the Link With Your Friend</p>
+                                <p className='small'>Click the chain icon to copy the room ID to clip board
+                                Send the copied link to your friend</p>
+                            </div>
+
+                            <div className="inst-step step3">
+                                <Icon class="material-symbols-outlined">play_circle</Icon>
+                                <hr className='inst-step-hr'></hr>
+                                <p className='title'>Step 3</p>
+                                <p className='desc'>Select a Video and Play</p>
+                                <p className='small'>Click the camera icon to select a video 
+                                Ensure the video is downloaded on each of your friends devices.</p>
+                            </div>                
                     </div>
-                    <div className="lp-steps">
-                        <div className="inst-step step1">
-                            <p className='title'>Step 1</p>
-                            <p className='desc'>Expand the sidebar and start a party</p>
-                            <p>Follow the arrows and expand the side bar</p>
-                            <p>press the button to start a party</p>
-                        </div>
-
-                        <div className="inst-step step2">
-                            <p className='title'>Step 2</p>
-                            <p className='desc'>Copy and share link with friend!</p>
-                            <p>Click the chain icon to copy the room ID to clip board</p>
-                            <p>Send the copied link to your friend</p>
-                        </div>
-
-                        <div className="inst-step step3">
-                            <p className='title'>Step 3</p>
-                            <p className='desc'>Select a video and play</p>
-                            <p>Click the camera icon to select a video</p>
-                            <p>SEnsure the video you wan to watch is downloaded on each of your friends devices.</p>
-                        </div>
+                        }      
                     </div>
                 </div>
+
             </div>
         </>
     );

@@ -24,6 +24,7 @@ let room = "";
 let vidControl = "";
 let seekCycle = 0;
 let connected = false;
+let disconnected = false;
 
 function App() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -31,13 +32,13 @@ function App() {
     const [videoURL, setVideoURL] = useState("");
     const [playVid, setPlayVid] = useState(true);
     const [otherRoomMembers, setORMs] = useState("");
-    const [myData, setMyData] = useState("myData")
+    const [myData, setMyData] = useState("")
     const [messages, setMessages] = useState([]);
     const [sock, setSock] = useState('Sock');
     const [seekTime, setSeekTime] = useState(0);
     const [toggle, setToggle] = useState(false);
     const [status, setStatus] = useState("Status: Not Connected");
-    const [alertType, setAlertType] = useState("error");
+    const [alertType, setAlertType] = useState("");
     // The below is a function which when called force updates the state. IDK how it works. Don't touch it.
     const [userName, setUname] = useState("Name");
     const [sidebarClicked, setSBClicked] = useState(false);
@@ -116,6 +117,18 @@ function App() {
 
     useEffect( 
         () => {
+            console.log("disconnecting useEffect");
+            if (disconnected) {
+                setMyData("You are disconnected");
+                setToggle(true);
+                setAlertType("error");
+                setStatus(myData);
+            }
+        },[socket, sock, connected]
+    );
+
+    useEffect( 
+        () => {
             console.log("Setting uName useEffect");
             if (connected)
                 setUname(uName);
@@ -145,6 +158,7 @@ function App() {
             } else if (args.code == 1) {
                 console.log(args);
                 socket.off('CONN_STATUS');
+                raiseAlert("Could not connect to server. Try again.")
             }
         });
     }
@@ -172,17 +186,22 @@ function App() {
                     forceUpdate();
                 });
             } else if (args.code === 1) {
-                if (args.msg === "RDNE") {
-                    console.log("Could not connect to servers. Room does not exist");
-                }
                 console.log(args);
                 socket.off('CONN_STATUS');
+                raiseAlert("Could not connect to server. RoomID could be incorrect.")
             }
         });
     }
 
     const listenPubChange = (socket) => {
         socket.on('PUBCH-C', (args) => {type = "pub"});
+    }
+
+    const raiseAlert = (str) => {
+        setMyData(str);
+        setToggle(true);
+        setAlertType("error");
+        setStatus(myData);
     }
 
     function onProgress(event) {
@@ -211,46 +230,59 @@ function App() {
     function ref(p) { vidControl = p; }
     function copyURLf() { navigator.clipboard.writeText(copyURL); }
 
+    function disc() {
+        if (connected) {
+            socket.disconnect();
+            connected = false;
+            disconnected = true;
+            raiseAlert("You are disconnected from server");
+        }
+    }
+
+  
+
     return (
         <>
+            {
+            videoURL === "" ?             
             <LandingPage type={type}></LandingPage>
-            <div className="arrows-wrapper">
+            : console.log("landing page removed")
+            }
+    
+            
+            {/* <div className="arrows-wrapper">
                 <div className="arrow arrow-first"></div>
                 <div className="arrow arrow-second"></div>
                 <div className="arrow arrow-third"></div>
-            </div>
+            </div> */}
 
             <div className={"alerts-wrapper-main"}>
                 <Collapse in={toggle}>
                     <Alert severity={alertType}
                         action={
                             <IconButton
-                            aria-label="close"
-                            color="inherit"
-                            size="small"
-                            onClick={() => {
-                                setToggle(false);
-                            }}
-                            >
+                                aria-label="close"
+                                color="inherit"
+                                size="small"
+                                onClick={() => {
+                                    setToggle(false);
+                                }}>
                             <CloseIcon fontSize="inherit" />
-                            </IconButton>                         
-                            }
-                            sx={{ mb: 2 }}
-                            >
-     
-                        <br />
+                            </IconButton>
+                        }
+                        sx={{ mb: 2 }}>
                         {status}
                     </Alert>
                 </Collapse>
             </div>
 
-            <HideOnMouseStop delay={1000} defaultTransition hideCursor>
-                <ConnectionSideMenu visible={sidebarVisible} myData={myData} membersData={otherRoomMembers} name={userName} socket={sock} messages={messages} con={connectPublisher} chURL={handleChangeURL} copyURL={copyURLf} />
-            </HideOnMouseStop>
+            {/* <HideOnMouseStop delay={1000} defaultTransition hideCursor> */}
+                <ConnectionSideMenu visible={sidebarVisible} myData={myData} disc={disc} membersData={otherRoomMembers} name={userName} socket={sock} messages={messages} con={connectPublisher} chURL={handleChangeURL} copyURL={copyURLf} />
+            {/* </HideOnMouseStop> */}
 
             <div className={"vidWrapper"}>
                 <div className={"vidContainer"}>
-                    <ReactPlayer ref={ref} url={videoURL} playing={playVid} className="react-player" controls width="100%" height="100%" onProgress={onProgress} onPause={playPause} onPlay={playPause}/>
+                    <ReactPlayer ref={ref} url={videoURL} playing={playVid} className="react-player" controls width="100%" height="100%"  onProgress={onProgress} onPause={playPause} onPlay={playPause}/>
                 </div>
             </div>
 

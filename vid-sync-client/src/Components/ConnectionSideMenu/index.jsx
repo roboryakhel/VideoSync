@@ -47,8 +47,7 @@ export const ConnectionSideMenu = (props) => {
     }
 
     const disconnect = () => {
-        if (socket.connected)
-            socket.disconnect();
+        props.disc();
     }
 
     const handleViewSidebar = () => { setSideBarOpen(!sidebarOpen); };
@@ -60,9 +59,9 @@ export const ConnectionSideMenu = (props) => {
                 <Container>
                     <Horizontal className={"openCloseBar"}>
                         <Icon onClick={handleViewSidebar}><FaBars style={{"color":"#FFFBEB"}} className={"FaBars"}></FaBars></Icon>
-                        <Icon className={sidebarInnerClass}><FaLink style={{"color":"#FFFBEB"}} onClick={props.copyURL}></FaLink></Icon>
-                        <Icon className={sidebarInnerClass}><FaUsers style={{"color":"#FFFBEB"}} onClick={() => {setInfo(props.membersData);setToggle(true)}}></FaUsers></Icon>
-                        <Icon className={sidebarInnerClass}><FaUserAlt style={{"color":"#FFFBEB"}} onClick={() => {setInfo(props.myData);setToggle(true)}}></FaUserAlt></Icon>
+                        <Icon className={sidebarInnerClass}><FaLink className="top-bar-icon" onClick={props.copyURL}></FaLink></Icon>
+                        <Icon className={sidebarInnerClass}><FaUsers className="top-bar-icon" onClick={() => {setInfo(props.membersData);setToggle(true)}}></FaUsers></Icon>
+                        <Icon className={sidebarInnerClass}><FaUserAlt className="top-bar-icon" onClick={() => {setInfo(props.myData);setToggle(true)}}></FaUserAlt></Icon>
                     </Horizontal>
                     <ContainerInner className={sidebarInnerClass} >
                         <Horizontal className={"startBar"}>
