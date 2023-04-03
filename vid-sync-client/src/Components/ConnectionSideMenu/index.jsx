@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Collapse from '@mui/material/Collapse';
 import {Container, Wrapper, Btn, ContainerInner, Horizontal,Icon, ChatContainer, SelVidIcon, MsgBox, MsgInputWrapper, MsgInput, MsgSendButton } from './elements';
-import { FaBars, FaUsers, FaLink, FaUserAlt, FaFileVideo } from "react-icons/fa";
+import { FaBars, FaUsers, FaLink, FaUserAlt, FaFileVideo, FaPlay } from "react-icons/fa";
 import {AiOutlineDisconnect} from "react-icons/ai";
 import { MessageBox } from '../MessageBox'; 
 
@@ -18,6 +18,8 @@ export const ConnectionSideMenu = (props) => {
     const [message, setMessage] = useState('');
     const [toggle, setToggle] = useState(false);
     const [info, setInfo] = useState("Info");
+    const [videoLink, setVideoLink] = useState('');
+
     const messageRef = useRef();
 
     useEffect(() => {
@@ -34,16 +36,16 @@ export const ConnectionSideMenu = (props) => {
 
     const handleSendMessage = (e) => {
         e.preventDefault();
-        if (message.trim()) {
-            props.socket.emit('CHAT-S', {
-                text: message,
-                // name: localStorage.getItem('userName'), // Store uName only when client runs in prod. Don't use this for dev or testing
-                name : props.name,
-                id: `${props.socket.id}${Math.random()}`,
-                socketID: props.socket.id
-          });
+        if(props.socket.connected && message.trim()) {
+                props.socket.emit('CHAT-S', {
+                    text: message,
+                    // name: localStorage.getItem('userName'), // Store uName only when client runs in prod. Don't use this for dev or testing
+                    name : props.name,
+                    id: `${props.socket.id}${Math.random()}`,
+                    socketID: props.socket.id
+              });
+            setMessage('');
         }
-        setMessage('');
     }
 
     const disconnect = () => {
@@ -68,6 +70,19 @@ export const ConnectionSideMenu = (props) => {
                             <Btn className={"button-strt button- startPty"} onClick={()=>{props.con()}}>Start a Party</Btn>
                             <SelVidIcon><FaFileVideo style={{"color":"#00FFF6"}} onClick={()=>{selectMovie()}}></FaFileVideo></SelVidIcon>
                             <input type='file' id='file' ref={inputFile} style={{display: 'none'}} onChange={props.chURL}/>
+                            <div className={"break"}></div> 
+                            <div className={"video-link-wrapper"}>
+                                <input  className={"remote-vl-input"}
+                                type="text"
+                                // id="message"
+                                // name="message"
+                                value={videoLink}
+                                placeholder="Paste video link here..."
+                                onChange={(e) => setVideoLink(e.target.value)}
+                                >
+                                </input>
+                                <div className='video-link-play' onClick={()=>{selectMovie()}}><FaPlay style={{"padding": "0px 10px 0px 30px" ,"color": "#fff"}} /></div>
+                            </div>
                         </Horizontal>
                     </ContainerInner>
                     <div id="chat-wrapper" className={sidebarInnerClass}>

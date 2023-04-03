@@ -9,7 +9,7 @@ export const LandingPage = (props) => {
         <>
             <div className="full">
                 <div className='full-inner'>
-                    <video autoPlay loop muted src={video} type="video/mp4" className="bg-video"></video>
+                    {/* <video autoPlay loop muted src={video} type="video/mp4" className="bg-video"></video> */}
 
                     <div className="lp-inner">
                         <div className="lp-intro">
@@ -28,7 +28,7 @@ export const LandingPage = (props) => {
                             <div className="lp-steps sub">
                             
                                 <div className="inst-step step1">
-                                <Icon class="material-symbols-outlined">menu</Icon>
+                                        <Icon class="material-symbols-outlined">menu</Icon>
                                     <hr className='inst-step-hr'></hr>
                                     <p className='title'>Step 1</p>
                                     <p className='desc'>Expand the SideBar and Start a Party</p>
@@ -37,7 +37,7 @@ export const LandingPage = (props) => {
                                 </div>
             
                                 <div className="inst-step step3">
-                                <Icon class="material-symbols-outlined">play_circle</Icon>
+                                <   Icon class="material-symbols-outlined">play_circle</Icon>
                                     <hr className='inst-step-hr'></hr>
                                     <p className='title'>Step 2</p>
                                     <p className='desc'>Select a Video and Play</p>

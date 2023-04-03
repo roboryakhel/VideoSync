@@ -1,6 +1,6 @@
 window.global ||= window;
 
-import { HideOnMouseStop } from 'react-hide-on-mouse-stop';
+// import { HideOnMouseStop } from 'react-hide-on-mouse-stop';
 import React, {useState, useEffect} from 'react';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
@@ -13,9 +13,8 @@ import { ConnectionSideMenu } from './Components/ConnectionSideMenu';
 import { LandingPage } from './Components/LandingPage';
 import './App.css';
 
-// const wsServerURL = "wss://35.183.113.241:8080";
-const wsServerURL = "wss://127.0.0.1:8080";
-const baseClientURL = "http://127.0.0.1:4200/?r=";
+const wsServerURL = "https://watchparty.herokuapp.com";
+const baseClientURL = "https://watch-partyso.netlify.app/?r=";
 let copyURL = baseClientURL;
 let socket = {};
 let type = "pub";
@@ -38,7 +37,7 @@ function App() {
     const [seekTime, setSeekTime] = useState(0);
     const [toggle, setToggle] = useState(false);
     const [status, setStatus] = useState("Status: Not Connected");
-    const [alertType, setAlertType] = useState("");
+    const [alertType, setAlertType] = useState("info");
     // The below is a function which when called force updates the state. IDK how it works. Don't touch it.
     const [userName, setUname] = useState("Name");
     const [sidebarClicked, setSBClicked] = useState(false);
@@ -59,7 +58,7 @@ function App() {
 
     useEffect( 
         () => {
-            console.log("MSG useEffect");
+            // console.log("MSG useEffect");
             if (connected) {
                 socket.on('CHAT-C', (args) => setMessages([...messages, args]));
                 return () => { socket.off('CHT-C'); };
@@ -69,7 +68,7 @@ function App() {
 
     useEffect( 
         () => {
-            console.log("Play/Pause useEffect");
+            // console.log("Play/Pause useEffect");
             if (connected) {
                 socket.on('VC-C', (args) => {    
                     if (args.type === "play")
@@ -84,7 +83,7 @@ function App() {
 
     useEffect( 
         () => {
-            console.log("New members useEffect");
+            // console.log("New members useEffect");
             if (connected) {
                 socket.on('MEMS-C', (args) => {setORMs([...otherRoomMembers, args.msg])});
                 return () => { socket.off('MEMS-C'); };
@@ -94,7 +93,7 @@ function App() {
 
     useEffect( 
         () => {
-            console.log("New seektime useEffect");
+            // console.log("New seektime useEffect");
             if (connected && type === "sub") {
                 socket.on('PGT-C', (args) => {setSeekTime(Math.floor(args.time));})
                 return () => { socket.off('PGT-C'); };
@@ -104,7 +103,7 @@ function App() {
 
     useEffect( 
         () => {
-            console.log("Setting Socket useEffect");
+            // console.log("Setting Socket useEffect");
             if (connected) {
                 setSock(socket);
                 setMyData("Name: " +uName+" type: "+type+" room: "+room);
@@ -117,7 +116,7 @@ function App() {
 
     useEffect( 
         () => {
-            console.log("disconnecting useEffect");
+            // console.log("disconnecting useEffect");
             if (disconnected) {
                 setMyData("You are disconnected");
                 setToggle(true);
@@ -129,14 +128,14 @@ function App() {
 
     useEffect( 
         () => {
-            console.log("Setting uName useEffect");
+            // console.log("Setting uName useEffect");
             if (connected)
                 setUname(uName);
         },[socket, userName]
     );
 
     const connectPublisher = () => {
-        console.log("connecting Pub");
+        // console.log("connecting Pub");
         socket = io(wsServerURL, {
             extraHeaders: {
                 type: type,
@@ -150,7 +149,7 @@ function App() {
                     // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
                     room = args.roomID;
                     copyURL += room;
-                    console.log(uName," connected to room ", room, " as ", type);
+                    // console.log(uName," connected to room ", room, " as ", type);
                     localStorage.setItem('pubID', args.pubID);
                     connected = true;
                     forceUpdate();
@@ -164,7 +163,7 @@ function App() {
     }
 
     function connectSubscriber(pubRoomID) {
-        console.log("connecting subscriber");
+        // console.log("connecting subscriber");
         socket = io(wsServerURL, {
             extraHeaders: {
             type: "sub",
@@ -179,7 +178,7 @@ function App() {
                     uName = args.username;
                     // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
                     type = "sub";
-                    console.log(uName," connected to room ", room, " as ", type);
+                    // console.log(uName," connected to room ", room, " as ", type);
                     localStorage.setItem('subID', args.subID);
                     connected = true;
                     listenPubChange(socket);

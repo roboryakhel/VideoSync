@@ -1,23 +1,24 @@
-const https = require('https');
+// const https = require('https');
+const http = require('http');
 const express = require('express');
 const { InMemoryDatabase } = require('in-memory-database');
 const app = express();
 const path = require('path');
 const fs = require('fs');
-
-const sslServer = https.createServer({
-  key:fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-  cert:fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
-  },app);
-  
+// const sslServer = https.createServer({
+//   key:fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+//   cert:fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+// },
+// app);
+const sslServer = http.createServer(app);
 const io = require("socket.io")(sslServer, {
   cors: {
-    origin: 'http://127.0.0.1:4200',
+    origin: 'https://watch-partyso.netlify.app',
     methods: ["GET", "POST"],
     allowedHeaders: ["type", "roomID","uid"],
     credentials: true,
   },
-  });
+});
 
 let usernames = ["BigHoss","bigfootisreal", "SaintBroseph", "FrostedCupcake", "kim_chi", "Babushka"];
 const mainRoom = "Main";
@@ -33,7 +34,9 @@ io.on("connection", (socket) => {
     if (socket.handshake.headers.uid !== "0" && activeSessions.has(socket.handshake.headers.uid)) {
       socket.emit('CONN-STATUS', {code:1, msg:"Connection rejected because you have an active session."});
       console.log(socket.id+ "::"+socket.handshake.headers.uid+"Connection rejected because active session exists");
-      return;
+      console.log("Active Sessions : " + activeSessions);
+      console.log("rooms to users map : "+roomsToUsers);
+      console.log("users to rooms map : " + usersToRooms); 
     } else {
       socket.emit('CONN-STATUS', {code:0, msg:"success"});
       let roomID = genID();
@@ -41,16 +44,16 @@ io.on("connection", (socket) => {
       let userID = genUID();
       
       // if a pub is trying to connect but it already exists in the server then delete the previous details.
-      roomsToUsers.set(roomID, socket.id+":"+username);
-      socketToType.set(socket.id, "pub");
+      roomsToUsers.set(roomID.toString(), socket.id+":"+username);
+      socketToType.set(socket.id.toString(), "pub");
       socket.emit(mainRoom, {
         username: username,
         roomID: roomID,
         pubID: userID
       });
       socket.join(roomID);
-      usersToRooms.set(socket.id, roomID); 
-      activeSessions.set(userID,socket.id);   
+      usersToRooms.set(socket.id.toString(), roomID); 
+      activeSessions.set(userID.toString(),socket.id);   
       console.log("Socket: "+socket.id+" connected to this server as PUB and has name: "+username+" and roomID: "+roomID);
     }
   } else {
@@ -85,21 +88,21 @@ io.on("connection", (socket) => {
 
   socket.on('VC-S', (message) => {  
     io.to(usersToRooms.get(socket.id)).emit('VC-C', message);
-    console.log (message);
+    // console.log (message);
   });
 
   socket.on('PGT-S', (message) => {  
     io.to(usersToRooms.get(socket.id)).emit('PGT-C', message);
-    console.log (message);
+    // console.log (message);
   });
 
   socket.on('CHAT-S', (message) => {  
     io.to(usersToRooms.get(socket.id)).emit('CHAT-C', message);
-    console.log (message);
+    // console.log (message);
   });
 
   socket.on("disconnect", () => {
-    let room = usersToRooms.get(socket.id);
+    let room = usersToRooms.get(socket.id.toString());
 
     if (roomSize(room) < 2)            // If there is only 1 person in the room and they are leaving
       roomsToUsers.delete(room);
@@ -135,10 +138,10 @@ const removeUserFromRoom = (room, sid) => {
 }
 
 const genUsername = (room) => {
-  let uL = roomsToUsers.get(room);
+  let usersStr = roomsToUsers.get(room).split(",");
 
   for (const name of usernames) {
-    if (!uL.includes(name))
+    if (!usersStr.includes(name))
       return name;
   }
 };
@@ -166,4 +169,6 @@ const getUsersInRoom = ( room) => {
   
   return arr;
 }
+
+
 sslServer.listen(process.env.PORT || 8080, () => console.log("Server is running"));
