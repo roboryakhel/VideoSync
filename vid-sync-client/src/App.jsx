@@ -146,7 +146,7 @@ function App() {
             if (args.code === 0) {
                 socket.on("Main", (args) => {
                     uName = args.username;
-                    // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
+                    localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
                     room = args.roomID;
                     copyURL += room;
                     // console.log(uName," connected to room ", room, " as ", type);
@@ -176,7 +176,7 @@ function App() {
             if (args.code === 0) {
                 socket.on(pubRoomID, (args) => {
                     uName = args.username;
-                    // localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
+                    localStorage.setItem('userName', uName); // Store uName only when client runs in prod. Don't use this for dev or testing
                     type = "sub";
                     // console.log(uName," connected to room ", room, " as ", type);
                     localStorage.setItem('subID', args.subID);
@@ -226,6 +226,7 @@ function App() {
     }
 
     function handleChangeURL(event)  { setVideoURL(global.URL.createObjectURL(event.target.files[0])); }
+    function handleChangeURL2(url)  { setVideoURL(url); }
     function ref(p) { vidControl = p; }
     function copyURLf() { navigator.clipboard.writeText(copyURL); }
 
@@ -238,8 +239,6 @@ function App() {
         }
     }
 
-  
-
     return (
         <>
             {
@@ -248,7 +247,6 @@ function App() {
             : console.log("landing page removed")
             }
     
-            
             {/* <div className="arrows-wrapper">
                 <div className="arrow arrow-first"></div>
                 <div className="arrow arrow-second"></div>
@@ -276,7 +274,7 @@ function App() {
             </div>
 
             {/* <HideOnMouseStop delay={1000} defaultTransition hideCursor> */}
-                <ConnectionSideMenu visible={sidebarVisible} myData={myData} disc={disc} membersData={otherRoomMembers} name={userName} socket={sock} messages={messages} con={connectPublisher} chURL={handleChangeURL} copyURL={copyURLf} />
+                <ConnectionSideMenu visible={sidebarVisible} myData={myData} disc={disc} membersData={otherRoomMembers} name={userName} socket={sock} messages={messages} con={connectPublisher} chURL={handleChangeURL} chURL2={handleChangeURL2} copyURL={copyURLf} />
             {/* </HideOnMouseStop> */}
 
             <div className={"vidWrapper"}>

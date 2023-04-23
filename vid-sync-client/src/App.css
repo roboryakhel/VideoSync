@@ -400,7 +400,7 @@ video {
 
 .bg-video{
   position: fixed;
-  /* opacity:0.6; */
+  opacity:0.1;
   width:100%;
   height: auto;
 }

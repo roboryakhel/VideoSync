@@ -54,6 +54,7 @@ export const ConnectionSideMenu = (props) => {
 
     const handleViewSidebar = () => { setSideBarOpen(!sidebarOpen); };
     const selectMovie = () => { inputFile.current.click(); };
+    const selectMovie2 = () => { props.chURL2(videoLink); };
 
     return (
         <>
@@ -76,12 +77,12 @@ export const ConnectionSideMenu = (props) => {
                                 type="text"
                                 // id="message"
                                 // name="message"
-                                value={videoLink}
+                                // value={videoLink}
                                 placeholder="Paste video link here..."
                                 onChange={(e) => setVideoLink(e.target.value)}
                                 >
                                 </input>
-                                <div className='video-link-play' onClick={()=>{selectMovie()}}><FaPlay style={{"padding": "0px 10px 0px 30px" ,"color": "#fff"}} /></div>
+                                <div className='video-link-play' onClick={()=>{selectMovie2()}}><FaPlay style={{"padding": "0px 10px 0px 30px" ,"color": "#fff"}} /></div>
                             </div>
                         </Horizontal>
                     </ContainerInner>

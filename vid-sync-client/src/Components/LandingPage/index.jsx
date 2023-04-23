@@ -1,5 +1,5 @@
 import { Icon } from '@mui/material';
-import React, {useState, useRef, useEffect} from 'react';
+import React from 'react';
 import video from '../../Videos/LPBG_0.mp4'
 import logo from '../../Pictures/WP_LOGO_3.png'
 
@@ -9,7 +9,7 @@ export const LandingPage = (props) => {
         <>
             <div className="full">
                 <div className='full-inner'>
-                    {/* <video autoPlay loop muted src={video} type="video/mp4" className="bg-video"></video> */}
+                    <video autoPlay loop muted src={video} type="video/mp4" className="bg-video"></video>
 
                     <div className="lp-inner">
                         <div className="lp-intro">
@@ -18,7 +18,7 @@ export const LandingPage = (props) => {
                                 <div className='logo-wrapper'>
                                     <img className="logo-img" src={logo}/>                            
                                 </div>
-                                <p className="desc">A Tool that Synchronizes Videos Playing on Your Device With Videos Playing on Your Friends Device.</p>
+                                <p className="desc">A Tool that Synchronizes Videos Playing on Your Device With Videos Playing on Your Friends Device</p>
                                 {/* <p>Simply choose a video you and your friends want to watch and play the video without any manual coordination.<br/>
                                 All party members can control the video (pause/play/ffwd etc) and all actions are synchronized!</p> */}
                                 

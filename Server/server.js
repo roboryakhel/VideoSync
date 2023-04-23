@@ -138,7 +138,7 @@ const removeUserFromRoom = (room, sid) => {
 }
 
 const genUsername = (room) => {
-  let usersStr = roomsToUsers.get(room).split(",");
+  let usersStr = roomsToUsers.get(room).toString().split(",");
 
   for (const name of usernames) {
     if (!usersStr.includes(name))
