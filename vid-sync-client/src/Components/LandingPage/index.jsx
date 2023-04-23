@@ -9,7 +9,22 @@ export const LandingPage = (props) => {
         <>
             <div className="full">
                 <div className='full-inner'>
-                    <video autoPlay loop muted src={video} type="video/mp4" className="bg-video"></video>
+                    {/* <video autoPlay loop muted src={video} type="video/mp4" className="bg-video"></video> */}
+
+                    <div class="LP-area" >
+                        <ul class="circles">
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                         </ul>
+                    </div >
 
                     <div className="lp-inner">
                         <div className="lp-intro">

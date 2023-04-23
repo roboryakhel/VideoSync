@@ -54,7 +54,14 @@ export const ConnectionSideMenu = (props) => {
 
     const handleViewSidebar = () => { setSideBarOpen(!sidebarOpen); };
     const selectMovie = () => { inputFile.current.click(); };
-    const selectMovie2 = () => { props.chURL2(videoLink); };
+    const selectMovie2 = () => {
+        // Validate youtube URL
+        const p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+        if(videoLink.match(p))
+            props.chURL2(videoLink); 
+        else 
+            alert("Not a valid youtube url");            
+    };
 
     return (
         <>
