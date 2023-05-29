@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const { InMemoryDatabase } = require('in-memory-database');
 const app = express();
+const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 // const sslServer = https.createServer({
@@ -13,7 +14,8 @@ const fs = require('fs');
 const sslServer = http.createServer(app);
 const io = require("socket.io")(sslServer, {
   cors: {
-    origin: 'https://watch-partyso.netlify.app',
+    // origin: 'https://watch-partyso.netlify.app',
+    origin: 'http://127.0.0.1:4200',
     methods: ["GET", "POST"],
     allowedHeaders: ["type", "roomID","uid"],
     credentials: true,
@@ -26,10 +28,12 @@ const roomsToUsers = new InMemoryDatabase();    // Map of rooms to usernames: ro
 const usersToRooms = new InMemoryDatabase();    // Map of users to rooms: socket.id --> roomID
 const socketToType = new InMemoryDatabase();    // Map of socketID to user Type: socket.id --> "pub"/"sub"
 const activeSessions = new InMemoryDatabase();  // Map of userID and socketID. userID will represent the connection key. To enforce single socket per user.
+const vidPlayingInRoom = new InMemoryDatabase(); // Map of roomID and video URL. roomID will be key and url will be value. 
 
 // client connects
 io.on("connection", (socket) => {
   console.log("==================== On Connection ====================");
+  // console.log(socket.handshake.headers);
   if (socket.handshake.headers.type === "pub") {
     if (socket.handshake.headers.uid !== "0" && activeSessions.has(socket.handshake.headers.uid)) {
       socket.emit('CONN-STATUS', {code:1, msg:"Connection rejected because you have an active session."});
@@ -39,7 +43,7 @@ io.on("connection", (socket) => {
       console.log("users to rooms map : " + usersToRooms); 
     } else {
       socket.emit('CONN-STATUS', {code:0, msg:"success"});
-      let roomID = genID();
+      let roomID = genRID();
       let username = usernames[0];
       let userID = genUID();
       
@@ -56,7 +60,7 @@ io.on("connection", (socket) => {
       activeSessions.set(userID.toString(),socket.id);   
       console.log("Socket: "+socket.id+" connected to this server as PUB and has name: "+username+" and roomID: "+roomID);
     }
-  } else {
+  } else if (socket.handshake.headers.type === "sub"){
     let room = socket.handshake.headers.roomid;
     if (activeSessions.has(socket.handshake.headers.uid)) {
       socket.emit('CONN-STATUS', {code:1,msg:"Connection rejected because you have an active session."});
@@ -73,7 +77,8 @@ io.on("connection", (socket) => {
         socketToType.set(socket.id, "sub");
         socket.emit(room, {
           username: username,
-          subID: userID
+          subID: userID,
+          vUrl: (vidPlayingInRoom.get(room)) ? vidPlayingInRoom.get(room) : "0"
         });
         usersToRooms.set(socket.id, room);
         activeSessions.set(userID,socket.id);   
@@ -88,12 +93,18 @@ io.on("connection", (socket) => {
 
   socket.on('VC-S', (message) => {  
     io.to(usersToRooms.get(socket.id)).emit('VC-C', message);
+    console.log (message);
+  });
+
+  socket.on('OLVID-S', (message) => {  
+    io.to(usersToRooms.get(socket.id)).emit('OLVID-C', message);
+    vidPlayingInRoom.set(usersToRooms.get(socket.id), message.url);
     // console.log (message);
   });
 
   socket.on('PGT-S', (message) => {  
     io.to(usersToRooms.get(socket.id)).emit('PGT-C', message);
-    // console.log (message);
+    console.log (message);
   });
 
   socket.on('CHAT-S', (message) => {  
@@ -138,7 +149,7 @@ const removeUserFromRoom = (room, sid) => {
 }
 
 const genUsername = (room) => {
-  let usersStr = roomsToUsers.get(room).toString().split(",");
+  let usersStr = roomsToUsers.get(room);
 
   for (const name of usernames) {
     if (!usersStr.includes(name))
@@ -146,7 +157,10 @@ const genUsername = (room) => {
   }
 };
 
-const genID = () => { return Date.now().toString(36) + Math.random().toString(36); };
+function genRID() {
+  const chatroomID = uuidv4();
+  return chatroomID;
+}
 const genUID = () => { return "uid:"+Date.now().toString(36) + Math.random().toString(36); };
 
 // The size is of the number of users in a room. 
