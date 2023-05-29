@@ -63,16 +63,16 @@ video {
 
 .button-strt {
   background-color: #00FFF6;
-  border: 1px solid rgb(0, 136, 255);
+  /* border: 1px solid rgb(0, 136, 255); */
   border-radius: 8px;
-  box-sizing: border-box;
-  color: #1c1e22;
+  /* box-sizing: border-box; */
+  color: #000;
   cursor: pointer;
   display: inline-block;
   font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
   font-size: 16px;
   font-weight: 600;
-  line-height: 20px;
+  /* line-height: 20px; */
   margin: 0;
   outline: none;
   padding: 13px 23px;
@@ -213,7 +213,7 @@ video {
 
 .sendMsgBtn {
   box-shadow: 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
-  background: #2671ff;
+  background: #01cccc;
   cursor: pointer;
 
 }
@@ -230,7 +230,7 @@ video {
 }
 
 #disconnectBtnWrapper {
-  margin-top:2%;
+  margin-top:4%;
   display:flex;
 }
 
@@ -261,7 +261,7 @@ video {
 }
 
 .vidWrapper {
-  z-index:0;
+  z-index:1;
   height:100%;
   width:100%;
 }
@@ -449,7 +449,7 @@ video {
   justify-content: center;
 }
 .logo-img {
-  z-index: 100;
+  z-index: 1;
   margin-bottom : 20px;
   width:50%;
   height:40%;
