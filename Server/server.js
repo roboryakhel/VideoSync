@@ -15,7 +15,7 @@ const sslServer = http.createServer(app);
 const io = require("socket.io")(sslServer, {
   cors: {
     // origin: 'https://watch-partyso.netlify.app',
-    origin: 'http://127.0.0.1:4200',
+    origin: 'http://localhost:4200',
     methods: ["GET", "POST"],
     allowedHeaders: ["type", "roomID","uid"],
     credentials: true,

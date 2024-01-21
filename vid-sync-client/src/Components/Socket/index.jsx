@@ -75,10 +75,7 @@ export let socket = io(wsServerURL, {
   extraHeaders: {
     type: getType(),
     roomID: getRoomID(),
-    uid: "0"
+    uid: (localStorage.getItem(type + "ID") === null) ? "0" : localStorage.getItem(type + "ID")
   },
 });
 
-// uid:
-// localStorage.getItem(type + "ID") === null
-  // : localStorage.getItem(type + "ID"),

@@ -1,5 +1,6 @@
 window.global ||= window;
 import React, { useState, useEffect } from "react";
+import "@fontsource/concert-one"; 
 import { ConnectionSideMenu } from "./Components/ConnectionSideMenu";
 import { LandingPage } from "./Components/LandingPage";
 import VideoPlayerManager from "./Components/VideoPlayer";

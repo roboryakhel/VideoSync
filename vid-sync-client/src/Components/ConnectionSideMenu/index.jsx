@@ -123,8 +123,7 @@ export const ConnectionSideMenu = (props) => {
   }
 
   return (
-    <>
-      <Wrapper className={sidebarClass}>
+    <Wrapper className={sidebarClass}>
         <Container>
           <Horizontal className={"openCloseBar"}>
             <Icon
@@ -190,6 +189,5 @@ export const ConnectionSideMenu = (props) => {
           </div>
         </Container>
       </Wrapper>
-    </>
   );
 };

@@ -4,8 +4,8 @@ import { FaFileVideo, FaPlay } from "react-icons/fa";
 
 export const VideoSelector = (props) => {
   const inputFile = useRef(null);
-
   const [videoLink, setVideoLink] = useState("");
+
 
   function selectLocalVideo() {
     inputFile.current.click();

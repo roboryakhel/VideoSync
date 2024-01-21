@@ -1,0 +1,23 @@
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* height: 10vh; */
+    margin: 0;
+  }
+  
+  .logo {
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: uppercase;
+    background: linear-gradient(to right, #3498db, #e74c3c);
+    -webkit-background-clip: text; 
+    color: transparent;
+    padding: 20px;
+    /* border-radius: 10px; */
+    /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); */
+    margin: 0;
+  }
+  
